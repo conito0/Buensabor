@@ -1,0 +1,68 @@
+.tarjeta {
+    width: 19rem;
+    background-color: #dc7ced;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    color: #020202;
+    font-size: smaller;
+    padding-bottom: 10px;
+    box-sizing: border-box; /* Incluye padding y borde en el tamaño total */
+}
+
+.img-altura {
+    margin-top: 10px;
+    min-height: 80px;
+    max-height: 100px;
+    min-width: 80px;
+    max-width: 100px;
+}
+
+.altura-cuerpo {
+    min-height: 200px;
+    max-height: 200px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box; /* Incluye padding y borde en el tamaño total */
+}
+
+.espacio {
+    padding: 20px;
+}
+
+.img-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0px;
+    flex-wrap: wrap; /* Permite que los íconos se ajusten dentro del contenedor */
+}
+
+.iconoMasMenos,
+.colorFondoBlanco {
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.iconoMasMenos {
+    color: #14171a;
+}
+
+.colorFondoBlanco {
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+.colorFondoBlanco i {
+    font-size: 2rem;
+    color: #c800ff;
+}
