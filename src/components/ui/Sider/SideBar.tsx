@@ -52,35 +52,42 @@ const Sidebar: React.FC = () => {
           <CNavItem>
             <Link to={`/productos/lista/${sucursalId}`} className="nav-link">
               <CIcon customClassName="nav-icon" icon={icon.cilFastfood} />
-                Productos
-              </Link>
+              Productos
+            </Link>
           </CNavItem>
-          <CNavItem>          
+          <CNavItem>
             <Link to={`/categorias/${sucursalId}`} className="nav-link">
-            <CIcon customClassName="nav-icon" icon={icon.cilSitemap} />
+              <CIcon customClassName="nav-icon" icon={icon.cilSitemap} />
               Categorías
             </Link>
           </CNavItem>
           <CNavItem>
             <Link to={`/unidadMedida/${sucursalId}`} className="nav-link">
               <CIcon customClassName="nav-icon" icon={icon.cilMediaStop} />
-                Unidad de Medida
+              Unidad de Medida
             </Link>
           </CNavItem>
           <CNavItem>
-              <Link
-                to={`/articuloInsumo/Lista/${sucursalId}`}className="nav-link">
-                <CIcon customClassName="nav-icon" icon={icon.cilClipboard} />
-                Articulo Insumo
-              </Link>
+            <Link
+              to={`/articuloInsumo/Lista/${sucursalId}`} className="nav-link">
+              <CIcon customClassName="nav-icon" icon={icon.cilClipboard} />
+              Articulo Insumo
+            </Link>
           </CNavItem>
           <CNavItem>
-              <Link to={`/promociones/lista/${sucursalId}`} className="nav-link">
+            <Link to={`/promociones/lista/${sucursalId}`} className="nav-link">
               <CIcon customClassName="nav-icon" icon={icon.cilCash} />
-                Promociones
-              </Link>
-            </CNavItem>
+              Promociones
+            </Link>
+          </CNavItem>
+          <CNavItem>
+            <Link to={`/carrito/${sucursalId}`} className="nav-link">
+              <CIcon customClassName="nav-icon" icon={icon.cilFastfood} />
+              Carrito
+            </Link>
+          </CNavItem>
         </CSidebarNav>
+
       </CSidebar>
     </div>
   );
