@@ -1,6 +1,8 @@
-import './ItemProducto.css'
-import ArticuloManufacturado from "../../../types/ArticuloManufacturado";
+import './ItemProducto.css';
+import ArticuloDto from "../../../types/dto/ArticuloDto";
 import Imagen from "../../../types/Imagen";
+import { useContext } from 'react';
+import { CarritoContextProvider, CartContext } from '../../../context/CarritoContext';
 
 type ProductoParams = {
     id: number;
@@ -9,16 +11,21 @@ type ProductoParams = {
     imagenes: Imagen[];
     descripcion: string;
     tiempoEstimadoMinutos: number;
-    productoObject: ArticuloManufacturado;
+    productoObject: ArticuloDto;
 }
 
 function ItemProducto(args: ProductoParams) {
+    const { addCarrito, removeCarrito, removeItemCarrito, cart } = useContext(CartContext);
 
     const hasImages = args.imagenes.length > 0;
 
+    // Check if the item is already in the cart
+    const isItemInCart = cart.some(detalle => detalle.articulo.id === args.productoObject.id);
+
     return (
         <>
-            <div key={args.id} className="col-sm-4 mb-4 mb-sm-0 espacio">
+        <CarritoContextProvider>
+        <div key={args.id} className="col-sm-4 mb-4 mb-sm-0 espacio">
                 <div className="card tarjeta">
                     {hasImages && (
                         <img
@@ -35,26 +42,29 @@ function ItemProducto(args: ProductoParams) {
                         <p className='card-text'>Tiempo de preparacion: {args.tiempoEstimadoMinutos} minutos</p>
                         <hr></hr>
                         <div className="icon-container">
-                            <a className='iconoMasMenos'
-                            // onClick={() => removeItemCarrito(args.instrumentoObject)}
+                            <a
+                                className='iconoMasMenos'
+                                onClick={() => removeItemCarrito(args.productoObject)}
                             >
                                 -
                             </a>
-                            <button className='colorFondoBlanco'
-                            // onClick={() => {
-                            //     isInstrumentoInCarrito
-                            //         ? removeCarrito(args.instrumentoObject)
-                            //         : addCarrito(args.instrumentoObject)
-                            // }}
+                            <button
+                                className='colorFondoBlanco'
+                                onClick={() => {
+                                    isItemInCart
+                                        ? removeCarrito(args.productoObject)
+                                        : addCarrito(args.productoObject);
+                                }}
                             >
-                                {
-                                    // isInstrumentoInCarrito
-                                    //     ? <i className="bi bi-cart-dash" title="Quitar"></i>
-                                    //     : <i className="bi bi-cart-check" title="Comprar"></i>
-                                }
+                                {isItemInCart ? (
+                                    <i className="bi bi-cart-dash" title="Quitar"></i>
+                                ) : (
+                                    <i className="bi bi-cart-check" title="Comprar"></i>
+                                )}
                             </button>
-                            <a className='iconoMasMenos'
-                            // onClick={() => addCarrito(args.instrumentoObject)}
+                            <a
+                                className='iconoMasMenos'
+                                onClick={() => addCarrito(args.productoObject)}
                             >
                                 +
                             </a>
@@ -62,7 +72,9 @@ function ItemProducto(args: ProductoParams) {
                     </div>
                 </div>
             </div>
+        </CarritoContextProvider>
         </>
+
     );
 }
 
