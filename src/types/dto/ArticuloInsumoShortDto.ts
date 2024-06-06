@@ -12,6 +12,7 @@ interface ArticuloInsumoShortDto extends DataModel<ArticuloInsumoShortDto>{
     precioCompra: number;
     stockActual: number;
     stockMaximo: number;
+    stockMinimo: number;
     esParaElaborar: boolean;
     categoria: CategoriaShorDto;
 }

@@ -12,8 +12,8 @@ export default class ArticuloDto {
   precioCompra: number = 0;
   stockActual: number = 0;
   stockMaximo: number = 0;
-  esParaElaborar: boolean = false;
   categoria: CategoriaShorDto;
+  tiempoEstimadoMinutos: number = 0;
   constructor() {
     this.imagen = new Imagen(); // Inicializar la propiedad categoria en el constructor
     this.unidadMedida = new IUnidadMedida();

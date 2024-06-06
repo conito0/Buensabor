@@ -7,7 +7,7 @@ import { TipoEnvio } from "./enums/TipoEnvio";
 export default class Pedido {
   id: number = 0;
   eliminado: boolean = false;
-  horaEstimadaFinalizacion: string = "";
+  horaEstimadaFinalizacion: string = '';
   total: number = 0;
   totalCosto: number = 0;
   estado: Estado = Estado.PENDIENTE;

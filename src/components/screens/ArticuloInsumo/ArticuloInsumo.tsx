@@ -100,6 +100,7 @@ export const ListaArticulosInsumo = () => {
       precioCompra: rowData.precioCompra,
       stockActual: rowData.stockActual,
       stockMaximo: rowData.stockMaximo,
+      stockMinimo: rowData.stockMinimo,
       esParaElaborar: rowData.esParaElaborar,
       unidadMedida: rowData.unidadMedida,
       categoria: rowData.categoria
@@ -157,6 +158,7 @@ export const ListaArticulosInsumo = () => {
       precioCompra: rowData.precioCompra,
       stockActual: rowData.stockActual,
       stockMaximo: rowData.stockMaximo,
+      stockMinimo: rowData.stockMinimo,
       esParaElaborar: rowData.esParaElaborar,
       unidadMedida: rowData.unidadMedida,
       categoria: rowData.categoria
@@ -177,6 +179,7 @@ export const ListaArticulosInsumo = () => {
     { id: "precioCompra", label: "Precio Compra", renderCell: (rowData) => <>{rowData.precioCompra}</> },
     { id: "stockActual", label: "Stock Actual", renderCell: (rowData) => <>{rowData.stockActual}</> },
     { id: "stockMaximo", label: "Stock Maximo", renderCell: (rowData) => <>{rowData.stockMaximo}</> },
+    { id: "stockMinimo", label: "Stock Minimo", renderCell: (rowData) => <>{rowData.stockMinimo}</> },
     { id: "esParaElaborar", label: "Es para elaborar", renderCell: (rowData) => <span>{rowData.esParaElaborar ? "Sí" : "No"}</span> },
     {
       id: "unidadMedida",
@@ -236,7 +239,7 @@ export const ListaArticulosInsumo = () => {
 
   return (
     <React.Fragment>
-      <BaseNavBar title="" />
+      <BaseNavBar/>
       <CContainer fluid style={{backgroundColor: "#fff"}}>
         <CRow>
           {/* Sidebar */}
