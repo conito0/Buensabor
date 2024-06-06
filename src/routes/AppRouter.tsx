@@ -15,7 +15,7 @@ import Producto from '../components/screens/CarritoProducto/Producto.tsx';
 const AppRouter = () => {
   return (
     <Routes>
-      <Route path="/" element={<><BaseNavBar title="Empresas" /> <ListaEmpresa /></>} />
+      <Route path="/" element={<><BaseNavBar /> <ListaEmpresa /></>} />
       <Route path='/articuloInsumo/Lista/:sucursalId' element={<ListaArticulosInsumo />} /> ta
       <Route path="/inicio/:sucursalId" element={<Inicio />} /> ta
       <Route path="/usuario/:sucursalId" element={<Usuario />} />
@@ -23,8 +23,8 @@ const AppRouter = () => {
       <Route path="/categorias/:sucursalId" element={<Categoria />} /> ta
       <Route path='/unidadMedida/:sucursalId' element={<UnidadMedida/>}/>
       <Route path="/promociones/lista/:sucursalId" element={<ListaPromocion />} />
-      <Route path="/sucursal/:empresaId" element={<><BaseNavBar title="Sucursales" /><ListaSucursal /></>} />
-      <Route path="/carrito/:sucursalId" element={<Producto />} /> 
+      <Route path="/sucursal/:empresaId" element={<><BaseNavBar /><ListaSucursal /></>} />
+      <Route path="/carrito" element={<Producto />} /> 
     </Routes>
   );
 };

@@ -1,43 +1,51 @@
-import {  useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import ArticuloManufacturadoService from "../../../services/ArticuloManufacturadoService";
 import ItemProducto from "../ItemProducto/ItemProducto";
-import './Producto.css'
 import { BaseNavBar } from "../../ui/common/BaseNavBar";
-import { CCol, CContainer } from "@coreui/react";
-import Sidebar from "../../ui/Sider/SideBar";
-import { Row } from "react-bootstrap";
 import ArticuloDto from "../../../types/dto/ArticuloDto";
 import { CarritoContextProvider } from "../../../context/CarritoContext";
 import { Carrito } from "../../ui/carrito/Carrito";
+import ArticuloInsumoService from "../../../services/ArticuloInsumoService";
 
 const Producto = () => {
 
-    const [productos, setProductos] = useState <ArticuloDto[]> ([]);
+    const [productos, setProductos] = useState<ArticuloDto[]>([]);
     const productoService = new ArticuloManufacturadoService();
+    const articuloInsumoService = new ArticuloInsumoService();
     const url = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
         const fetchData = async () => {
-            const productData = await productoService.getAll(url + 'articuloManufacturado')
-            setProductos(productData.map((value) => {
-                return {
-                    id: value.id,
-                    categoria: value.categoria,
-                    denominacion: value.denominacion,
-                    precioVenta: value.precioVenta,
-                    esParaElaborar: true,
-                    eliminado: value.eliminado,
-                    imagen: value.imagenes[0] || undefined,
-                    precioCompra: 0,
-                    stockActual: 0,
-                    stockMaximo: 0,
-                    unidadMedida: value.unidadMedida
-                }
+            const productData = await productoService.getAll(url + 'articuloManufacturado');
+            const insumData = await articuloInsumoService.getAll(url + 'articuloInsumo');
+    
+            // Filtrar los productos manufacturados y los insumos
+            const insumos = insumData.filter(insumo => !insumo.esParaElaborar);
+    
+            // Combinar los productos manufacturados y los insumos en un solo array
+            const combinedData = [...productData, ...insumos];
+    
+            // Mapear el array combinado y ajustar los atributos necesarios
+            const mergedProducts = combinedData.map((value) => ({
+                id: value.id,
+                categoria: value.categoria,
+                denominacion: value.denominacion,
+                precioVenta: value.precioVenta,
+                eliminado: value.eliminado,
+                imagen: value.imagenes[0] || undefined,
+                precioCompra: 0,
+                stockActual: 0,
+                stockMaximo: 0,
+                tiempoEstimadoMinutos: value.tiempoEstimadoMinutos || 0,
+                unidadMedida: value.unidadMedida
             }));
-            console.log(productData);
+    
+            // Actualizar el estado con los productos combinados
+            setProductos(mergedProducts);
         };
         fetchData();
     }, []);
+    
 
     if (productos.length === 0) {
         return (
@@ -47,49 +55,41 @@ const Producto = () => {
         );
     }
 
-    return(
+    return (
         <>
-  <BaseNavBar title="" />
-  <CContainer fluid>
-    <div className="row">
-      {/* Sidebar */}
-      <CCol sm="2">
-        <Sidebar />
-      </CCol>
-      <CCol sm="10">
-        <Row>
-            <CarritoContextProvider>
-            <CCol md="9">
-                <div className="row">
+          <BaseNavBar />
+          <div className="container-fluid">
+            <div className="row">
+              <CarritoContextProvider>
+                <div className="col-md-9">
+                  <div className="row">
                     {productos.map((producto: ArticuloDto, index) => (
-                        <div className="col-md-9 mb-4" key={index}>
+                      <div className="col-sm-3 mb-3" key={index}>
                         <ItemProducto
-                            id={producto.id}
-                            denominacion={producto.denominacion}
-                            descripcion=""
-                            precioVenta={producto.precioVenta}
-                            imagenes={[producto.imagen]}
-                            tiempoEstimadoMinutos={20}
-                            productoObject={producto}
+                          id={producto.id}
+                          denominacion={producto.denominacion}
+                          descripcion=""
+                          precioVenta={producto.precioVenta}
+                          imagenes={[producto.imagen]}
+                          tiempoEstimadoMinutos={producto.tiempoEstimadoMinutos}
+                          productoObject={producto}
                         />
-                        </div>
+                      </div>
                     ))}
+                  </div>
                 </div>
-            </CCol>
-            <CCol md="3">
-                <div className="sticky-top">
-                <b>Carrito Compras</b>
-                <hr />
-                <Carrito></Carrito>
+                <div className="col-md-3 mt-3">
+                    <div className="card">
+                        <b className="text-center">Carrito Compras</b>
+                        <Carrito></Carrito>
+                    </div>
                 </div>
-            </CCol>
-            </CarritoContextProvider>
-        </Row>
-      </CCol>
-    </div>
-  </CContainer>
-</>
-
-    );
+              </CarritoContextProvider>
+            </div>
+          </div>
+        </>
+      );
+      
 }
+
 export default Producto;
