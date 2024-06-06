@@ -1,10 +1,7 @@
-import DataModel from "../DataModel";
-
-
-interface EmpresaShorDto extends DataModel<EmpresaShorDto>{
-    nombre: string,
-    razonSocial: string,
-    cuil: number
+export default class EmpresaShorDto {
+  id: number = 0;
+  eliminado: boolean = false;
+  nombre: string = "";
+  razonSocial: string = "";
+  cuil: number = 0;
 }
-
-export default EmpresaShorDto;

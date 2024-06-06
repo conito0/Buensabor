@@ -1,7 +1,7 @@
-import DataModel from "./DataModel";
 
-interface Imagen extends DataModel<Imagen>{
-    name: string;
-    url: string;
+export default class Imagen{
+    id: number = 0;
+    eliminado: boolean = false;
+    name: string = '';
+    url: string = '';
 }
-export default Imagen;

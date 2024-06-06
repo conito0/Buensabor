@@ -31,7 +31,7 @@ function ItemProducto(args: ProductoParams) {
                         <img
                             src={args.imagenes[0].url}
                             className="card-img-top"
-                            alt={args.imagenes[0].descripcion}
+                            alt={args.imagenes[0].name}
                         />
                     )}
 

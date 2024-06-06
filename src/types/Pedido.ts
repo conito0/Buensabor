@@ -1,20 +1,22 @@
-import DataModel from "./DataModel";
 import DetallePedido from "./DetallePedido";
 import SucursalShorDto from "./dto/SucursalShortDto";
 import { Estado } from "./enums/Estado";
 import { FormaPago } from "./enums/FormaPago";
 import { TipoEnvio } from "./enums/TipoEnvio";
 
-interface Pedido extends DataModel<Pedido>{
-    horaEstimadaFinalizacion: string;
-    total: number;
-    totalCosto: number;
-    estado: Estado;
-    tipoEnvio: TipoEnvio;
-    formaPago: FormaPago;
-    fechaPedido: string;
-    detallePedidos: DetallePedido[];
-    sucursal: SucursalShorDto
+export default class Pedido {
+  id: number = 0;
+  eliminado: boolean = false;
+  horaEstimadaFinalizacion: string = "";
+  total: number = 0;
+  totalCosto: number = 0;
+  estado: Estado = Estado.PENDIENTE;
+  tipoEnvio: TipoEnvio = TipoEnvio.DELIVERY;
+  formaPago: FormaPago = FormaPago.MERCADOPAGO;
+  fechaPedido: Date = new Date();
+  detallePedidos: DetallePedido[] = [];
+  sucursal: SucursalShorDto;
+  constructor() {
+    this.sucursal = new SucursalShorDto(); // Inicializar la propiedad categoria en el constructor
   }
-
-  export default Pedido;
+}
