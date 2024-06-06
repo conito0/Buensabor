@@ -108,15 +108,15 @@ useEffect(() => {
 
   const crearPedidoDetalle = async (): Promise<number> => {
     try {
-            // Crear detalles del pedido y asignarles el pedido
-            const detallesConPedido: DetallePedido[] = cart.map(detalle => {
-              const pedidoDetalle = new DetallePedido();
-              pedidoDetalle.articulo = detalle.articulo;
-              pedidoDetalle.cantidad = detalle.cantidad;
-              return pedidoDetalle;
-            });
-            console.log(cart)
-            console.log(detallesConPedido)
+      // Crear detalles del pedido y asignarles el pedido
+      const detallesConPedido: DetallePedido[] = cart.map(detalle => {
+        const pedidoDetalle = new DetallePedido();
+        pedidoDetalle.articulo = detalle.articulo;
+        pedidoDetalle.cantidad = detalle.cantidad;
+        return pedidoDetalle;
+      });
+      console.log(cart)
+      console.log(detallesConPedido)
       // lógica para crear el pedido con los detalles del carrito
       const nuevoPedido = new Pedido();
       nuevoPedido.fechaPedido = new Date();

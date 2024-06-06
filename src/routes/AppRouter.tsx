@@ -24,7 +24,7 @@ const AppRouter = () => {
       <Route path='/unidadMedida/:sucursalId' element={<UnidadMedida/>}/>
       <Route path="/promociones/lista/:sucursalId" element={<ListaPromocion />} />
       <Route path="/sucursal/:empresaId" element={<><BaseNavBar /><ListaSucursal /></>} />
-      <Route path="/carrito" element={<Producto />} /> 
+      <Route path="/carrito/:sucursalId" element={<Producto />} /> 
     </Routes>
   );
 };

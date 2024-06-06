@@ -11,6 +11,7 @@ interface IArticuloInsumo extends DataModel<IArticuloInsumo>{
     precioCompra: number;
     stockActual: number;
     stockMaximo: number;
+    stockMinimo: number;
     esParaElaborar: boolean;
     categoria: Categoria;
 }
