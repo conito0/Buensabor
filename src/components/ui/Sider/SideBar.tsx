@@ -81,7 +81,8 @@ const Sidebar: React.FC = () => {
             </Link>
           </CNavItem>
           <CNavItem>
-            <Link to={`/carrito/${sucursalId}`} className="nav-link">
+            <Link 
+              to={`/carrito/${sucursalId}`} className="nav-link">
               <CIcon customClassName="nav-icon" icon={icon.cilFastfood} />
               Carrito
             </Link>

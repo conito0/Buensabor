@@ -3,6 +3,10 @@ import ArticuloManufacturado from "../../../types/ArticuloManufacturado"
 import ArticuloManufacturadoService from "../../../services/ArticuloManufacturadoService";
 import ItemProducto from "../ItemProducto/ItemProducto";
 import './Producto.css'
+import { BaseNavBar } from "../../ui/common/BaseNavBar";
+import { CCol, CContainer } from "@coreui/react";
+import Sidebar from "../../ui/Sider/SideBar";
+import { Row } from "react-bootstrap";
 
 const Producto = () => {
 
@@ -30,34 +34,45 @@ const Producto = () => {
 
     return(
         <>
-            <div className="row">
-                <div className="col-9">
-                    <div className="row">
-                        {productos.map((producto: ArticuloManufacturado, index) => {
-                            return (
-                                <ItemProducto
-                                    productoObject={producto}
-                                    key={index}
-                                    id={producto.id}
-                                    denominacion={producto.denominacion}
-                                    precioVenta={producto.precioVenta}
-                                    imagenes={producto.imagenes}
-                                    descripcion={producto.descripcion}
-                                    tiempoEstimadoMinutos={producto.tiempoEstimadoMinutos}
-
-                                >
-                                </ItemProducto>
-
-                            )
-                        })}
+  <BaseNavBar title="" />
+  <CContainer fluid>
+    <div className="row">
+      {/* Sidebar */}
+      <CCol sm="2">
+        <Sidebar />
+      </CCol>
+      <CCol sm="10">
+        <Row>
+            <CCol md="9">
+                <div className="row">
+                {productos.map((producto: ArticuloManufacturado, index) => (
+                    <div className="col-md-9 mb-4" key={index}>
+                    <ItemProducto
+                        productoObject={producto}
+                        id={producto.id}
+                        denominacion={producto.denominacion}
+                        precioVenta={producto.precioVenta}
+                        imagenes={producto.imagenes}
+                        descripcion={producto.descripcion}
+                        tiempoEstimadoMinutos={producto.tiempoEstimadoMinutos}
+                    />
                     </div>
+                ))}
                 </div>
-                <div className="col-3">
-                    <b>Carrito Compras</b>
-                    <hr></hr>
+            </CCol>
+            <CCol md="3">
+                <div className="sticky-top">
+                <b>Carrito Compras</b>
+                <hr />
+                {/* Aquí va el contenido del carrito */}
                 </div>
-            </div>
-        </>
+            </CCol>
+        </Row>
+      </CCol>
+    </div>
+  </CContainer>
+</>
+
     );
 }
 export default Producto;

@@ -121,5 +121,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
     <CartContext.Provider value={{ cart, addCarrito, limpiarCarrito, removeCarrito, removeItemCarrito, crearPedidoDetalle }}>
       {children}
     </CartContext.Provider>
+
+    <NavBar></NavBar>
   );
 }
