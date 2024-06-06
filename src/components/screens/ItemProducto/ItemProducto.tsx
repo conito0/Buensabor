@@ -1,8 +1,7 @@
 import './ItemProducto.css';
 import ArticuloDto from "../../../types/dto/ArticuloDto";
 import Imagen from "../../../types/Imagen";
-import { useContext } from 'react';
-import { CarritoContextProvider, CartContext } from '../../../context/CarritoContext';
+import { CarritoContextProvider } from '../../../context/CarritoContext';
 import { useCarrito } from '../../../hooks/useHooks';
 
 type ProductoParams = {

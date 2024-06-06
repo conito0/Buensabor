@@ -90,7 +90,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       const nuevoPedido = new Pedido();
       nuevoPedido.fechaPedido = new Date();
       nuevoPedido.total = cart.reduce((total, detalle) => total + detalle.articulo.precioVenta * detalle.cantidad, 0);
-  
+      
       // Guardar el pedido en el backend
       const respuestaPedido = await pedidoService.post(url + "pedido", nuevoPedido);
   

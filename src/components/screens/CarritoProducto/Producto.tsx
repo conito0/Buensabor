@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from "react"
-import ArticuloManufacturado from "../../../types/ArticuloManufacturado"
+import {  useEffect, useState } from "react"
 import ArticuloManufacturadoService from "../../../services/ArticuloManufacturadoService";
 import ItemProducto from "../ItemProducto/ItemProducto";
 import './Producto.css'
@@ -8,8 +7,7 @@ import { CCol, CContainer } from "@coreui/react";
 import Sidebar from "../../ui/Sider/SideBar";
 import { Row } from "react-bootstrap";
 import ArticuloDto from "../../../types/dto/ArticuloDto";
-import { CarritoContextProvider, CartContext } from "../../../context/CarritoContext";
-import { useCarrito } from "../../../hooks/useHooks";
+import { CarritoContextProvider } from "../../../context/CarritoContext";
 import { Carrito } from "../../ui/carrito/Carrito";
 
 const Producto = () => {
