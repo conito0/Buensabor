@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react"
-import ArticuloManufacturado from "../../../types/ArticuloManufacturado"
-import ArticuloManufacturadoService from "../../../services/ArticuloManufacturadoService";
 import ItemProducto from "../ItemProducto/ItemProducto";
 import './Producto.css'
 import { BaseNavBar } from "../../ui/common/BaseNavBar";
 import { CCol, CContainer } from "@coreui/react";
 import Sidebar from "../../ui/Sider/SideBar";
 import { Row } from "react-bootstrap";
+import ArticuloDto from "../../../types/dto/ArticuloDto";
+import ArticuloDtoService from "../../../services/ArticuloDto";
 
 const Producto = () => {
 
-    const [productos, setProductos] = useState <ArticuloManufacturado[]> ([]);
-    const productoService = new ArticuloManufacturadoService();
+    const [productos, setProductos] = useState <ArticuloDto[]> ([]);
+    const productoService = new ArticuloDtoService();
     const url = import.meta.env.VITE_API_URL;
 
 
@@ -45,7 +45,7 @@ const Producto = () => {
         <Row>
             <CCol md="9">
                 <div className="row">
-                {productos.map((producto: ArticuloManufacturado, index) => (
+                {productos.map((producto: ArticuloDto, index) => (
                     <div className="col-md-9 mb-4" key={index}>
                     <ItemProducto
                         productoObject={producto}
