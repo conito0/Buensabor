@@ -1,10 +1,13 @@
-import React, { createContext, useState, ReactNode } from 'react';
+import React, { createContext, useState, ReactNode, useEffect } from 'react';
 
 import PedidoService from '../services/PedidoService';
 import DetallePedido from '../types/DetallePedido';
-import DetallePedidoService from '../services/DetallePedidoService';
+// import DetallePedidoService from '../services/DetallePedidoService';
 import ArticuloDto from '../types/dto/ArticuloDto';
 import Pedido from '../types/Pedido';
+import { useParams } from 'react-router-dom';
+import SucursalShortDtoService from '../services/dtos/SucursalShortDtoService';
+import SucursalShorDto from '../types/dto/SucursalShortDto';
 
 
 interface CartContextType {
@@ -27,9 +30,28 @@ export const CartContext = createContext<CartContextType>({
 
 export function CarritoContextProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<DetallePedido[]>([]);
-  const pedidoDetalleService = new DetallePedidoService();
+  // const pedidoDetalleService = new DetallePedidoService();
   const pedidoService = new PedidoService();
   const url = import.meta.env.VITE_API_URL;
+  const { sucursalId } = useParams();
+  const sucursalService = new SucursalShortDtoService();
+  const [sucursal, setSucursal] = useState<SucursalShorDto>(); // Inicialización del estado
+
+  const fetchSucursalData = async () => {
+    try {
+        if (sucursalId) {
+            const sucursal = await sucursalService.get(url + 'sucursal', sucursalId);
+            setSucursal(sucursal)
+        }
+    } catch (error) {
+        console.error("Error al obtener los datos de la sucursal:", error);
+    }
+};
+
+useEffect(() => {
+    fetchSucursalData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [sucursalId]); // Dependencia actualizada
 
   const addCarrito = (product: ArticuloDto) => {
     // lógica para agregar un producto al carrito
@@ -51,7 +73,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
         cantidad: 1,
         subTotal: product.precioVenta,
         articulo: product,
-        pedido: new Pedido(),
+        // pedido: new Pedido(),
       };
       const oldCart = cart;
 
@@ -86,26 +108,34 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
 
   const crearPedidoDetalle = async (): Promise<number> => {
     try {
+            // Crear detalles del pedido y asignarles el pedido
+            const detallesConPedido: DetallePedido[] = cart.map(detalle => {
+              const pedidoDetalle = new DetallePedido();
+              pedidoDetalle.articulo = detalle.articulo;
+              pedidoDetalle.cantidad = detalle.cantidad;
+              return pedidoDetalle;
+            });
+            console.log(cart)
+            console.log(detallesConPedido)
       // lógica para crear el pedido con los detalles del carrito
       const nuevoPedido = new Pedido();
       nuevoPedido.fechaPedido = new Date();
       nuevoPedido.total = cart.reduce((total, detalle) => total + detalle.articulo.precioVenta * detalle.cantidad, 0);
-      
-      // Guardar el pedido en el backend
+      nuevoPedido.detallePedidos = cart;
+      if (sucursal) {
+        nuevoPedido.sucursal = sucursal;
+      } else {
+        // Manejar el caso en que la sucursal no esté definida
+        console.error('La sucursal no está definida');
+      }      // Guardar el pedido en el backend
+      console.log(nuevoPedido)
       const respuestaPedido = await pedidoService.post(url + "pedido", nuevoPedido);
   
-      // Crear detalles del pedido y asignarles el pedido
-      const detallesConPedido: DetallePedido[] = cart.map(detalle => {
-        const pedidoDetalle = new DetallePedido();
-        pedidoDetalle.articulo = detalle.articulo;
-        pedidoDetalle.cantidad = detalle.cantidad;
-        pedidoDetalle.pedido = respuestaPedido;
-        return pedidoDetalle;
-      });
+
   
       // Guardar los detalles del pedido en el backend
-      const detallesRespuesta = await Promise.all(detallesConPedido.map(detalle => pedidoDetalleService.post(url + "pedidoDetalle", detalle)));
-      console.log(detallesRespuesta);
+      // const detallesRespuesta = await Promise.all(detallesConPedido.map(detalle => pedidoDetalleService.post(url + "pedidoDetalle", detalle)));
+      // console.log(detallesRespuesta);
   
       // limpiarCarrito();
   

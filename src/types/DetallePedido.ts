@@ -1,4 +1,4 @@
-import Pedido from "./Pedido";
+// import Pedido from "./Pedido";
 import ArticuloDto from "./dto/ArticuloDto";
 
 export default class DetallePedido {
@@ -7,9 +7,9 @@ export default class DetallePedido {
   cantidad: number = 0;
   subTotal: number = 0;
   articulo: ArticuloDto;
-  pedido: Pedido;
+  // pedido: Pedido;
   constructor() {
     this.articulo = new ArticuloDto(); // Inicializar la propiedad categoria en el constructor
-    this.pedido = new Pedido();
+    // this.pedido = new Pedido();
   }
 }
