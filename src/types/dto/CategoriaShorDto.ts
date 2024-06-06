@@ -1,11 +1,6 @@
-import DataModel from "../DataModel";
-
-
-interface CategoriaShorDto extends DataModel<CategoriaShorDto>{
-    id: number;
-    eliminado: false,
-    denominacion: string,
-    esInsumo: false,
+export default class CategoriaShorDto {
+  id: number = 0;
+  eliminado: boolean = false;
+  denominacion: string = "";
+  esInsumo: boolean = false;
 }
-
-export default CategoriaShorDto;

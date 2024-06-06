@@ -1,15 +1,11 @@
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
-import DetallePedido from '../types/DetallePedido';
-import Pedido from '../types/Pedido';
-import DetallePedidoService from '../services/DetallePedidoService';
+import React, { createContext, useState, ReactNode } from 'react';
+
 import PedidoService from '../services/PedidoService';
+import DetallePedido from '../types/DetallePedido';
+import DetallePedidoService from '../services/DetallePedidoService';
 import ArticuloDto from '../types/dto/ArticuloDto';
-import { Estado } from '../types/enums/Estado';
-import { TipoEnvio } from '../types/enums/TipoEnvio';
-import { FormaPago } from '../types/enums/FormaPago';
-import { useParams } from 'react-router-dom';
-import SucursalService from '../services/SucursalService';
-import SucursalShorDto from '../types/dto/SucursalShortDto';
+import Pedido from '../types/Pedido';
+
 
 interface CartContextType {
   cart: DetallePedido[];
@@ -34,32 +30,14 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
   const pedidoDetalleService = new DetallePedidoService();
   const pedidoService = new PedidoService();
   const url = import.meta.env.VITE_API_URL;
-  const { sucursalId } = useParams(); // Obtén el ID de la URL
-  const sucursalService = new SucursalService();
-  const [sucursal, setSucursal] = useState<SucursalShorDto | null>(null); // Variable de estado para almacenar el nombre de la sucursal
-
-  const fetchSucursalData = async () => {
-    try {
-      if (sucursalId) {
-        const sucursal = await sucursalService.get(url + 'sucursal', sucursalId);
-        setSucursal(sucursal);
-      }
-    } catch (error) {
-      console.error("Error al obtener los datos de la sucursal:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchSucursalData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sucursalId]);
 
   const addCarrito = (product: ArticuloDto) => {
+    // lógica para agregar un producto al carrito
     const existe = cart.some((detalle) => detalle.articulo.id === product.id);
     if (existe) {
       const cartClonado = cart.map((detalle) =>
         detalle.articulo.id === product.id
-          ? { ...detalle, cantidad: detalle.cantidad + 1, subTotal: (detalle.cantidad + 1) * product.precioVenta }
+          ? { ...detalle, cantidad: detalle.cantidad + 1 }
           : detalle
       );
       setCart(cartClonado);
@@ -70,77 +48,74 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
         cantidad: 1,
         subTotal: product.precioVenta,
         articulo: product,
+        pedido: new Pedido(),
       };
       setCart((prevCart) => [...prevCart, nuevoDetalle]);
     }
   };
 
   const removeItemCarrito = (product: ArticuloDto) => {
+    // lógica para eliminar un producto del carrito
     const existe = cart.some((detalle) => detalle.articulo.id === product.id);
     if (existe) {
-      const cartClonado = cart
-        .map((detalle) =>
-          detalle.articulo.id === product.id
-            ? { ...detalle, cantidad: detalle.cantidad - 1, subTotal: (detalle.cantidad - 1) * product.precioVenta }
-            : detalle
-        )
-        .filter((detalle) => detalle.cantidad > 0);
+      const cartClonado = cart.map((detalle) =>
+        detalle.articulo.id === product.id
+          ? { ...detalle, cantidad: detalle.cantidad - 1 }
+          : detalle
+      ).filter((detalle) => detalle.cantidad > 0);
       setCart(cartClonado);
     }
   };
 
   const removeCarrito = (product: ArticuloDto) => {
+    // lógica para eliminar un producto completamente del carrito
     setCart((prevCart) => prevCart.filter((detalle) => detalle.articulo.id !== product.id));
   };
 
   const limpiarCarrito = () => {
+    // lógica para limpiar todo el carrito
     setCart([]);
   };
 
   const crearPedidoDetalle = async (): Promise<number> => {
-    if (!sucursal) {
-      throw new Error("Sucursal no definida");
-    }
-
     try {
-      const nuevoPedido: Pedido = {
-        id: 0,
-        horaEstimadaFinalizacion: "00:00:00",
-        total: cart.reduce((total, detalle) => total + detalle.subTotal, 0),
-        totalCosto: 0,
-        estado: Estado.PREPARACION,
-        tipoEnvio: TipoEnvio.DELIVERY,
-        formaPago: FormaPago.MERCADOPAGO,
-        fechaPedido: new Date().toISOString().split('T')[0],
-        detallePedidos: cart,
-        sucursal: sucursal,
-        eliminado: false,
-      };
-
+      // lógica para crear el pedido con los detalles del carrito
+      const nuevoPedido = new Pedido();
+      nuevoPedido.fechaPedido = new Date();
+      nuevoPedido.total = cart.reduce((total, detalle) => total + detalle.articulo.precioVenta * detalle.cantidad, 0);
+  
+      // Guardar el pedido en el backend
       const respuestaPedido = await pedidoService.post(url + "pedido", nuevoPedido);
-
-      const detallesConPedido: DetallePedido[] = cart.map((detalle) => ({
-        ...detalle,
-        pedido: respuestaPedido,
-      }));
-
-      const detallesRespuesta = await Promise.all(
-        detallesConPedido.map((detalle) => pedidoDetalleService.post(url + "pedidoDetalle", detalle))
-      );
+  
+      // Crear detalles del pedido y asignarles el pedido
+      const detallesConPedido: DetallePedido[] = cart.map(detalle => {
+        const pedidoDetalle = new DetallePedido();
+        pedidoDetalle.articulo = detalle.articulo;
+        pedidoDetalle.cantidad = detalle.cantidad;
+        pedidoDetalle.pedido = respuestaPedido;
+        return pedidoDetalle;
+      });
+  
+      // Guardar los detalles del pedido en el backend
+      const detallesRespuesta = await Promise.all(detallesConPedido.map(detalle => pedidoDetalleService.post(url + "pedidoDetalle", detalle)));
       console.log(detallesRespuesta);
-
-      limpiarCarrito();
-
+  
+      // limpiarCarrito();
+  
+      // Devolver el ID del pedido como parte de la resolución de la promesa
       return respuestaPedido.id;
     } catch (error) {
       console.error('Error al crear el pedido:', error);
       throw error;
     }
   };
+  
 
   return (
+    
     <CartContext.Provider value={{ cart, addCarrito, limpiarCarrito, removeCarrito, removeItemCarrito, crearPedidoDetalle }}>
       {children}
     </CartContext.Provider>
   );
+
 }

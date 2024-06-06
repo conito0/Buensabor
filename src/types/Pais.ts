@@ -1,7 +1,5 @@
-import DataModel from "./DataModel";
-
-interface Pais extends DataModel<Pais>{
-  nombre: "";
-  }
-
-  export default Pais;
+export default class Pais {
+  id: number = 0;
+  eliminado: boolean = false;
+  nombre: string = "";
+}

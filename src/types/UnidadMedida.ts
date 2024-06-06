@@ -1,7 +1,5 @@
-import DataModel from "./DataModel";
-
-interface IUnidadMedida extends DataModel<IUnidadMedida> {
-    denominacion: string;
+export default class IUnidadMedida {
+  id: number = 0;
+  eliminado: boolean = false;
+  denominacion: string = "";
 }
-
-export default IUnidadMedida;
