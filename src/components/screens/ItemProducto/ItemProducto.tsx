@@ -3,6 +3,7 @@ import ArticuloDto from "../../../types/dto/ArticuloDto";
 import Imagen from "../../../types/Imagen";
 import { useContext } from 'react';
 import { CarritoContextProvider, CartContext } from '../../../context/CarritoContext';
+import { useCarrito } from '../../../hooks/useHooks';
 
 type ProductoParams = {
     id: number;
@@ -15,7 +16,7 @@ type ProductoParams = {
 }
 
 function ItemProducto(args: ProductoParams) {
-    const { addCarrito, removeCarrito, removeItemCarrito, cart } = useContext(CartContext);
+    const { addCarrito, removeCarrito, removeItemCarrito, cart } = useCarrito();
 
     const hasImages = args.imagenes.length > 0;
 

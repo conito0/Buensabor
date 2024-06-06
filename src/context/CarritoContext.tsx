@@ -22,7 +22,7 @@ export const CartContext = createContext<CartContextType>({
   removeCarrito: () => {},
   removeItemCarrito: () => {},
   limpiarCarrito: () => {},
-  crearPedidoDetalle: async () => 0,
+  crearPedidoDetalle: async () => 0
 });
 
 export function CarritoContextProvider({ children }: { children: ReactNode }) {
@@ -34,6 +34,9 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
   const addCarrito = (product: ArticuloDto) => {
     // lógica para agregar un producto al carrito
     const existe = cart.some((detalle) => detalle.articulo.id === product.id);
+
+    console.log(existe)
+
     if (existe) {
       const cartClonado = cart.map((detalle) =>
         detalle.articulo.id === product.id
@@ -50,7 +53,11 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
         articulo: product,
         pedido: new Pedido(),
       };
-      setCart((prevCart) => [...prevCart, nuevoDetalle]);
+      const oldCart = cart;
+
+      const newCart = [...oldCart, nuevoDetalle];
+
+      setCart(newCart);
     }
   };
 
