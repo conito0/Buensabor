@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import ArticuloManufacturadoService from "../../../services/ArticuloManufacturadoService";
 import ItemProducto from "../ItemProducto/ItemProducto";
-import { BaseNavBar } from "../../ui/common/BaseNavBar";
 import ArticuloDto from "../../../types/dto/ArticuloDto";
 import { CarritoContextProvider } from "../../../context/CarritoContext";
 import { Carrito } from "../../ui/carrito/Carrito";
@@ -85,7 +84,6 @@ const Producto = () => {
 
   return (
     <>
-      <BaseNavBar />
       <div className="container-fluid producto-container">
         <div className="row">
           <CarritoContextProvider>

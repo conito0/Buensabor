@@ -123,26 +123,37 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       });
       console.log(cart);
       console.log(detallesConPedido);
-     // Filtra los detalles del carrito cuyo tiempo estimado no sea 0
-      const detallesConTiempo = cart.filter(detalle => detalle.articulo.tiempoEstimadoMinutos !== 0);
 
+      // Filtra los detalles del carrito cuyo tiempo estimado no sea 0
+      const detallesConTiempo = cart.filter(detalle => detalle.articulo.tiempoEstimadoMinutos !== 0);
+      
       // Calcula la suma de los tiempos estimados de los detalles filtrados
       const sumaTiempos = detallesConTiempo.reduce(
         (total, detalle) => total + detalle.articulo.tiempoEstimadoMinutos * detalle.cantidad,
         0
       );
-
+      
       // Obtén la fecha y hora actual
       const fechaActual = new Date();
-
+      
       // Calcula la hora estimada de finalización
       const horaActual = fechaActual.getHours();
       const minutosActuales = fechaActual.getMinutes();
-      const sumaMinutos = sumaTiempos % 60;
-      const sumaHoras = Math.floor(sumaTiempos / 60);
-      // Calcula la hora estimada de finalización
-      const horaEstimada = String(horaActual + sumaHoras).padStart(2, '0');
-      const minutosEstimados = String(minutosActuales + sumaMinutos).padStart(2, '0');
+      const totalMinutos = minutosActuales + sumaTiempos;
+      
+      // Calcula las horas y minutos totales
+      const horasAdicionales = Math.floor(totalMinutos / 60);
+      const minutosEstimados = totalMinutos % 60;
+      const horaEstimada = (horaActual + horasAdicionales) % 24;
+      
+      // Formatea la hora y los minutos
+      const horaEstimadaFormateada = String(horaEstimada).padStart(2, '0');
+      const minutosEstimadosFormateados = String(minutosEstimados).padStart(2, '0');
+      
+      // Resultado final
+      const tiempoEstimado = `${horaEstimadaFormateada}:${minutosEstimadosFormateados}`;
+      console.log(`Hora estimada de finalización: ${tiempoEstimado}`);
+      
 
 
       // Crea el objeto Pedido

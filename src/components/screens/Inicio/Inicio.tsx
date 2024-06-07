@@ -32,7 +32,7 @@ import { CCol, CContainer, CRow } from "@coreui/react";
 const Inicio: React.FC = () => {
   return (
     <React.Fragment>
-      <BaseNavBar title="" />
+      <BaseNavBar/>
       <CContainer fluid>
         <CRow>
           {/* Sidebar */}

@@ -1,6 +1,9 @@
+import { useParams } from "react-router-dom";
 
 
 export const BaseNavBar = () => {
+  const { sucursalId } = useParams(); // Obtén el ID de la URL
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-primary">
     <div className="container-fluid ms-3">
@@ -24,7 +27,7 @@ export const BaseNavBar = () => {
             <a
               className="nav-link active text-white"
               aria-current="page"
-              href="/home"
+              href={`/inicio/${sucursalId}`}
             >
               Home
             </a>
@@ -33,7 +36,7 @@ export const BaseNavBar = () => {
             <a
               className="nav-link active text-white"
               aria-current="page"
-              href="/carrito"
+              href={`/carrito/${sucursalId}`}
             >
               Productos
             </a>
