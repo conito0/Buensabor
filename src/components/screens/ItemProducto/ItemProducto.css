@@ -1,5 +1,13 @@
-.img-custom {
-    width: 100%; /* Ajusta el ancho de la imagen al 100% del contenedor */
-    height: auto; /* Autoajuste de la altura para mantener la proporción */
-  }
-  
+.icon-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.rounded-image {
+  border-radius: 0px; 
+}
+
+.precio-container {
+  text-align: center;
+}

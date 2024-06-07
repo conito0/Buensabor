@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useCarrito } from "../../../hooks/useHooks"
 import DetallePedido from "../../../types/DetallePedido";
+import './Carrito.css'
 
 interface CartItemProps {
   detalle: DetallePedido;
@@ -61,66 +62,72 @@ export const Carrito = () => {
     <div className="text-center">
       <label className="cart-button">
         <i>Items del Pedido</i>
-        <hr></hr>
       </label>
 
       <aside className="cart">
-        {cart.length === 0 ? (
-          <p className="text-danger">Sin instrumentos en el carrito.</p>
-        ) : (
-          <>
-            <ul>
-              {cart.map((detalle, index) => (
-                <CartItem
-                  detalle={detalle}
-                  key={index}
-                />
-              ))}
-            </ul>
-            <div>
-              <h3>${totalProductos}</h3>
-            </div>
-            <div>
-              <button
-                className="btn btn-outline-danger"
-                onClick={limpiarCarritoYResetearIdPedido} // Utilizar la función que limpia el carrito y restablece idPedido
-                title="Limpiar Todo"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1"
-                  stroke="currentColor"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                  <path d="M17 17a2 2 0 1 0 2 2" />
-                  <path d="M17 17h-11v-11" />
-                  <path d="M9.239 5.231l10.761 .769l-1 7h-2m-4 0h-7" />
-                  <path d="M3 3l18 18" />
-                </svg>
-              </button>
-            </div>
-
-            {pedidoCreado && idPedido !== undefined && (
-              <div className="text-green m-3">
-                El pedido con id {idPedido} se guardó correctamente!
+        <div className="cart-items">
+          {cart.length === 0 ? (
+            <p className="text-danger">Sin instrumentos en el carrito.</p>
+          ) : (
+            <>
+              <ul>
+                {cart.map((detalle, index) => (
+                  <CartItem
+                    detalle={detalle}
+                    key={index}
+                  />
+                ))}
+              </ul>
+              <div>
+                <h3>${totalProductos}</h3>
               </div>
-            )}
+              <div className="cart-buttons">
+                <div>
+                  <button
+                    className="btn btn-outline-danger"
+                    onClick={limpiarCarritoYResetearIdPedido} // Utilizar la función que limpia el carrito y restablece idPedido
+                    title="Limpiar Todo"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1"
+                      stroke="currentColor"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                      <path d="M17 17a2 2 0 1 0 2 2" />
+                      <path d="M17 17h-11v-11" />
+                      <path d="M9.239 5.231l10.761 .769l-1 7h-2m-4 0h-7" />
+                      <path d="M3 3l18 18" />
+                    </svg>
+                  </button>
+                </div>
+                {pedidoCreado && idPedido !== undefined && (
+                  <div className="text-success">
+                    El pedido con id {idPedido} se guardó correctamente!
+                  </div>
+                )}
 
 
-            {!pedidoCreado && idPedido === undefined && ( // Mostrar botón solo si idPedido es undefined
-              <button className='btn btn-outline-primary' onClick={handleGenerarPedido}>
-                GENERAR PEDIDO
-              </button>
-            )}
-          </>
-        )}
+                {!pedidoCreado && idPedido === undefined && ( // Mostrar botón solo si idPedido es undefined
+                  <button className='btn btn-outline-primary' onClick={handleGenerarPedido}>
+                    GENERAR PEDIDO
+                  </button>
+                )}
+              </div>
+
+
+
+            </>
+          )}
+        </div>
+
       </aside>
     </div>
   );
