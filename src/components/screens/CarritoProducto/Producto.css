@@ -1,21 +1,22 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+
+.producto-container {
+    margin-top: 20px;
 }
 
-.card {
-    margin: 10px;
-    max-width: 250px; /* Ancho máximo de las cards */
-    width: 100%; /* Asegura que las cards ocupen todo el ancho disponible */
-    padding: 20px;
-    height: 470px;
-    box-sizing: border-box; /* Incluye padding y borde en el tamaño total */
+.select-categoria {
+    margin-bottom: 40px;
 }
 
-/* Estilo para eliminar el subrayado azul de los enlaces */
-a {
-    text-decoration: none; /* Elimina el subrayado */
-    color: inherit; /* Hereda el color del texto para los enlaces */
+.carrito-card {
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+}
+
+.custom-select {
+    font-size: 14px;
+    padding: 5px 10px;
+    width: 70%;
+    margin: 0 auto;
+    margin-bottom: 3%;
 }
