@@ -36,7 +36,6 @@ export const Carrito = () => {
   const totalProductos = cart.reduce((total, detalle) => total + detalle.articulo.precioVenta * detalle.cantidad, 0);
   const [pedidoCreado, setPedidoCreado] = useState(false);
 
-  console.log(pedidoCreado)
   const handleGenerarPedido = async () => {
     try {
       const nuevoIdPedido = await crearPedidoDetalle();
@@ -52,7 +51,6 @@ export const Carrito = () => {
     }
   };
 
-  console.log(idPedido)
   const limpiarCarritoYResetearIdPedido = () => {
     limpiarCarrito();
     setIdPedido(undefined); // Restablecer idPedido a undefined cuando se limpie el carrito
