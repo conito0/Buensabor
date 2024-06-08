@@ -9,6 +9,9 @@ import Categoria from "../../../types/Categoria";
 import CategoriaService from "../../../services/CategoriaService";
 import "./Producto.css";
 import { BaseNavBar } from "../../ui/common/BaseNavBar";
+import { Button } from "react-bootstrap";
+import Domicilio from "../../../types/Domicilio";
+import DeliveryModal from "../../ui/Modal/Delivery/Delivery";
 
 const Producto = () => {
   const [productos, setProductos] = useState<ArticuloDto[]>([]);
@@ -18,6 +21,7 @@ const Producto = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const categoriaService = new CategoriaService();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+
 
   const estaEnHorarioDeAtencion = (date: Date) => {
     const diaSemana = date.getDay();
@@ -40,7 +44,7 @@ const Producto = () => {
         return tiempoActual >= tiempoInicio || tiempoActual < tiempoFin;
       }
     };
-
+    
     const horarioLunesADomingo = estaDentroRango(0, 0, 23, 59);
     const horarioSabadoDomingo = estaDentroRango(0, 0, 23, 59);
 
@@ -196,6 +200,16 @@ const Producto = () => {
 
 const CarritoButtons = () => {
   const { cart } = useContext(CartContext);
+  
+  const [showModal, setShowModal] = useState(false);
+
+  const handleShow = () => setShowModal(true);
+  const handleClose = () => setShowModal(false);
+
+  const handleSave = (domicilio: Domicilio) => {
+    // Handle the save logic here
+    console.log('Domicilio saved:', domicilio);
+  };
 
   const maxTiempoEstimado = cart.length > 0 
     ? Math.max(...cart.map(item => item.articulo.tiempoEstimadoMinutos))
@@ -207,10 +221,13 @@ const CarritoButtons = () => {
         Local
         <div>{maxTiempoEstimado} minutos</div>
       </button>
-      <button className="btn btn-secondary mx-2">
+      <div>
+      <Button className="btn btn-secondary mx-2" onClick={handleShow}>
         Delivery
-        <div>{maxTiempoEstimado+20} minutos</div>
-      </button>
+        <div>{maxTiempoEstimado + 20} minutos</div>
+      </Button>
+      <DeliveryModal show={showModal} handleClose={handleClose} handleSave={handleSave} />
+    </div>
     </div>
   );
 };
