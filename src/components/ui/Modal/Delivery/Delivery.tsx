@@ -207,7 +207,6 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({
               </Form.Group>
             </div>
           </div>
-
           <hr />
           <h5>Localidad</h5>
           <Form.Group>
