@@ -1,99 +1,53 @@
-import { Box, Grid, Container, Typography } from "@mui/material";
-// import InicioCard from "../../ui/common/InicioCard";
-import ChartCard from "./ChartCard";
-import BaseBar from "./BaseBar";
-import BasePie from "./BasePie";
-import React from "react";
-import { BaseNavBar } from "../../ui/common/BaseNavBar";
-import Sidebar from "../../ui/Sider/SideBar";
-import { CCol, CContainer, CRow } from "@coreui/react";
+import React, { useState } from 'react';
 
-// Contenido para las tarjetas de inicio
+const images = [
+  'img1.jpeg',
+  'img2.jpeg',
+  'img3.jpg'
+];
 
-// const EstadisticaContent = {
-//     url: 'https://img.freepik.com/foto-gratis/grafico-barras-crecimiento-marketing-flecha-icono-compras-linea-signo-o-simbolo-concepto-comercio-electronico-sobre-fondo-azul-ilustracion-3d_56104-1787.jpg?t=st=1714963640~exp=1714967240~hmac=8552b84f75da0abe3845183fa21489047a486ef00e1df37dc51d6223cc008841&w=740',
-//     title: 'Estadistica',
-//     content: 'En esta sección encontraras la información general de tu empresa',
-//     verMasUrl: '/estadisticas',
-// };
-// const CuponesContent = {
-//     url: 'https://img.freepik.com/foto-gratis/cono-cupon-venta-o-compra-descuento-especial-promocion-marketing-compra-pago-comercio-electronico-compras-linea-ilustracion-3d_56104-2104.jpg?t=st=1714846472~exp=1714850072~hmac=23cc0754f9b08c9cb3d053e731ec73b7e25c376edf9141b0838e43dc9f9aae00&w=740',
-//     title: 'Cupones',
-//     content: 'Aqui puedes ver los cupones a los que pueden acceder tus clientes',
-//     verMasUrl: '/cupones/lista',
-// };
+export const Inicio = () => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-// const cardStyle = {
-//   width: "100%",
-//   height: "100%",
-//   backgroundColor: "#9c27b0",
-// };
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
+  };
 
-const Inicio: React.FC = () => {
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
+  };
+
   return (
-    <React.Fragment>
-      <BaseNavBar/>
-      <CContainer fluid>
-        <CRow>
-          {/* Sidebar */}
-          <CCol xs="auto" className="sidebar">
-            <Sidebar />
-          </CCol>
-
-          {/* Contenido principal */}
-          <CCol>
-            <Box component="main" sx={{ flexGrow: 1, pl: 9, pt: 4 }}>
-              <Container>
-                <Typography component="h1" variant="h5" color="initial">
-                  Welcome
-                </Typography>
-
-                <Grid
-                  container
-                  spacing={3}
-                  sx={{
-                    py: 2,
-                    alignContent: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Grid item xs={12} md={6}>
-                    <ChartCard title="Gráfico de Pastel">
-                      <BasePie />
-                    </ChartCard>
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <ChartCard title="Gráfico de Barras">
-                      <BaseBar />
-                    </ChartCard>
-                  </Grid>
-                </Grid>
-                <Grid
-                  container
-                  spacing={3}
-                  sx={{ alignContent: "center", justifyContent: "center" }}
-                >
-                  {/* <Grid item xs={12} md={4}>
-                            <Box sx={cardStyle}>
-                                <InicioCard content={EstadisticaContent} />
-
-                            </Box>
-                        </Grid> */}
-                
-                  {/* <Grid item xs={12} md={4}>
-                            <Box sx={cardStyle}>
-                                <InicioCard content={CuponesContent} />
-
-                            </Box>
-                        </Grid> */}
-                </Grid>
-              </Container>
-            </Box>
-          </CCol>
-        </CRow>
-      </CContainer>
-    </React.Fragment>
+    <>
+      <div>
+        <h1 className='text-center m-3'>El Buen Sabor</h1>
+        <div id="carouselExample" className="carousel slide">
+          <div className="carousel-inner">
+            {images.map((image, index) => (
+              <div className={`carousel-item ${index === currentImageIndex ? 'active' : ''}`} key={index}>
+                <img src={`../../public/images/ui/${image}`} className="d-block w-100 img-fluid" alt={`Slide ${index + 1}`} style={{ objectFit: 'cover', maxHeight: '500px' }} />
+              </div>
+            ))}
+          </div>
+          <button className="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev" onClick={prevImage}>
+            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span className="visually-hidden">Previous</span>
+          </button>
+          <button className="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next" onClick={nextImage}>
+            <span className="carousel-control-next-icon" aria-hidden="true"></span>
+            <span className="visually-hidden">Next</span>
+          </button>
+        </div>
+        <div className='col-md-12'>
+          <p className='text-center h5 m-3 mb-5'>
+            Musical Hendrix es una tienda de instrumentos musicales con ya más de 15 años de
+            experiencia. Tenemos el conocimiento y la capacidad como para informarte acerca de las
+            mejores elecciones para tu compra musical.
+          </p>
+        </div>
+        <hr />
+      </div>
+    </>
   );
 };
-
 export default Inicio;

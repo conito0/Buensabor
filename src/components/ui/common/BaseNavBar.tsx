@@ -36,9 +36,45 @@ export const BaseNavBar = () => {
             <a
               className="nav-link active text-white"
               aria-current="page"
-              href={`/carrito/${sucursalId}`}
+              href={`/productos/${sucursalId}`}
             >
               Productos
+            </a>
+          </li>
+          <li className="nav-item">
+            <a
+              className="nav-link active text-white"
+              aria-current="page"
+              href={`/categorias/${sucursalId}`}
+            >
+              Categorias
+            </a>
+          </li>
+          <li className="nav-item">
+            <a
+              className="nav-link active text-white"
+              aria-current="page"
+              href={`/articuloManufacturado/${sucursalId}`}
+            >
+              Articulos Manufacturados
+            </a>
+          </li>
+          <li className="nav-item">
+            <a
+              className="nav-link active text-white"
+              aria-current="page"
+              href={`/articuloInsumo/${sucursalId}`}
+            >
+              Articulos Insumos
+            </a>
+          </li>
+          <li className="nav-item">
+            <a
+              className="nav-link active text-white"
+              aria-current="page"
+              href={`/pedidos/${sucursalId}`}
+            >
+              Pedidos
             </a>
           </li>
         </ul>
