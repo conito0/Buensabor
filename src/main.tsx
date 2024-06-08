@@ -11,7 +11,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <Auth0Provider domain="dev-txo0jpb5hw80bylr.us.auth0.com"
                      clientId="MoOscA1VTuRLgEhcLpxbZi4FkGAxcqd5"
                      authorizationParams={{
-                         redirect_uri: 'http://localhost:5173/productos/1'
+                         redirect_uri: 'http://localhost:5173/carrito/1'
                      }}>
           <Provider store={store}>
               <App /> {/* Renderizamos el componente principal de la aplicación */}

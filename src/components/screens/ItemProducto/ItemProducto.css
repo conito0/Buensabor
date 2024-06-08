@@ -4,6 +4,11 @@
   gap: 10px;
 }
 
+.img-custom {
+  height: 236px;
+  object-fit: contain;
+}
+
 .rounded-image {
   border-radius: 0px; 
 }
