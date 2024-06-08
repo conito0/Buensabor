@@ -118,4 +118,24 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
 
     return fetch(path, options);
   }
+  // Método para descontar el stock
+  async descontarStock(url: string, id: number, cantidad: number): Promise<number> {
+    const path = `${url}/${id}/${cantidad}`;
+    const options: RequestInit = {
+      method: "GET", // Usar GET ya que el backend lo espera
+    };
+  
+    try {
+      const response = await this.request(path, options);
+  
+      if (typeof response !== 'number' || isNaN(response)) {
+        throw new Error("La respuesta no es un número válido");
+      }
+  
+      return response;
+    } catch (error) {
+      throw new Error("Error al procesar la respuesta: " + error);
+    }
+  }
+  
 }
