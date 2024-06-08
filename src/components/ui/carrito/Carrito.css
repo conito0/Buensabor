@@ -36,7 +36,9 @@
     /* Margen entre los items */
 }
 
-
+.cart-item {
+    text-align: left;
+}
 
 .cart-item img {
     margin-right: 10px;

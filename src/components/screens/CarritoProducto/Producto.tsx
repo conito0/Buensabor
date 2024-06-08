@@ -76,18 +76,24 @@ const Producto = () => {
 
   if (productos.length === 0) {
     return (
-      <div className="alert alert-danger" role="alert">
-        No hay productos disponibles
-      </div>
+        <>
+          <BaseNavBar/>
+          <div style={{height: "calc(100vh - 56px)"}} className={"d-flex flex-column justify-content-center align-items-center w-100"}>
+            <div className="spinner-border" role="status">
+            </div>
+            <div>Cargando los productos</div>
+          </div>
+        </>
     );
   }
 
   return (
-    <>
-      <div className="container-fluid producto-container">
-        <div className="row">
-          <CarritoContextProvider>
-            <div className="col-md-9">
+      <>
+        <BaseNavBar/>
+        <div className="container-fluid producto-container">
+          <div className="row">
+            <CarritoContextProvider>
+              <div className="col-md-9">
               <select className="form-control custom-select" onChange={handleCategoryFilter}>
                 <option value="">Todas las categorías</option>
                 {categorias.map((categoria) => (
@@ -116,7 +122,6 @@ const Producto = () => {
             </div>
             <div className="col-md-3 mt-3">
               <div className="card carrito-card">
-                <b className="text-center">Carrito Compras</b>
                 <Carrito></Carrito>
               </div>
             </div>
