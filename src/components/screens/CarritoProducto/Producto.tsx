@@ -123,7 +123,6 @@ const Producto = () => {
             </div>
             <div className="col-md-3 mt-3">
               <div className="card carrito-card">
-                <b className="text-center">Carrito Compras</b>
                 <Carrito></Carrito>
               </div>
             </div>
