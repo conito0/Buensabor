@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Table, TableHead, TableBody, TableRow, TableCell, TablePagination, IconButton, Box } from '@mui/material';
+import { TablePagination, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
@@ -34,39 +34,38 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
   };
 
   return (
-    <>
-      <Table>
-        <TableHead>
-          <TableRow>
+    <div className="table-responsive">
+              <table className="table responsive">
+        <thead>
+          <tr>
             {columns.map((column) => (
-              <TableCell key={column.id}>{column.label}</TableCell>
+              <th key={column.id}>{column.label}</th>
             ))}
-            <TableCell>Acciones</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
           {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-            <TableRow key={index}>
+            <tr key={index}>
               {columns.map((column) => (
-                <TableCell key={column.id}>
+                <td key={column.id}>
                   {column.renderCell ? column.renderCell(row) : row[column.id]}
-                </TableCell>
+                </td>
               ))}
-              <TableCell>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
+              <td>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
                     <EditIcon />
                   </IconButton>
                   <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
                     <DeleteIcon />
                   </IconButton>
-
-                </Box>
-              </TableCell>
-            </TableRow>
+                </div>
+              </td>
+            </tr>
           ))}
-        </TableBody>
-      </Table>
+        </tbody>
+      </table>
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
@@ -76,7 +75,7 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-    </>
+    </div>
   );
 };
 
