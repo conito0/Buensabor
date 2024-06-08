@@ -175,8 +175,8 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       const nuevoPedido = new Pedido();
       nuevoPedido.fechaPedido = fechaActual;
       nuevoPedido.total = cart.reduce((total, detalle) => total + detalle.articulo.precioVenta * detalle.cantidad, 0);
-      nuevoPedido.detallePedidos = cart;
-      nuevoPedido.horaEstimadaFinalizacion = `${horaEstimada}:${minutosEstimados}`;
+      nuevoPedido.detallePedidos = detallesConPedido;
+      nuevoPedido.horaEstimadaFinalizacion = `${tiempoEstimado}`;
       if (sucursal) {
         nuevoPedido.sucursal = sucursal;
       } else {

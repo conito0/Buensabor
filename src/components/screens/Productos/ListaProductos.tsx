@@ -217,7 +217,17 @@ export const ListaProductos = () => {
       }
     },
   ];
-
+  if (filteredData.length === 0) {
+    return (
+        <>
+          <div style={{height: "calc(100vh - 56px)"}} className={"d-flex flex-column justify-content-center align-items-center w-100"}>
+            <div className="spinner-border" role="status">
+            </div>
+            <div>Cargando los articulos manufacturados</div>
+          </div>
+        </>
+    );
+  }
   return (
   <React.Fragment>
     <CContainer fluid style={{backgroundColor: "#fff"}}>
