@@ -17,5 +17,7 @@ export abstract class AbstractBackendClient<T> {
     
     // Método abstracto para subir archivos
     abstract uploadFile(url: string, file: File, id: string): Promise<Response>;
+
+    abstract descontarStock(url: string, id: number, cantidad: number): Promise<number>;
   }
   
