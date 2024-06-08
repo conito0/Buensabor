@@ -8,6 +8,7 @@ import ArticuloInsumoService from "../../../services/ArticuloInsumoService";
 import Categoria from "../../../types/Categoria";
 import CategoriaService from "../../../services/CategoriaService";
 import './Producto.css'
+import { BaseNavBar } from "../../ui/common/BaseNavBar";
 
 const Producto = () => {
 
