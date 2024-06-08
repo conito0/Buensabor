@@ -19,7 +19,7 @@ interface CartContextType {
 }
 
 export const CartContext = createContext<CartContextType>({
-  cart: [],
+  cart: JSON.parse(localStorage.getItem('cart') || '[]') || [],
   addCarrito: () => {},
   removeCarrito: () => {},
   removeItemCarrito: () => {},
@@ -28,7 +28,7 @@ export const CartContext = createContext<CartContextType>({
 });
 
 export function CarritoContextProvider({ children }: { children: ReactNode }) {
-  const [cart, setCart] = useState<DetallePedido[]>([]);
+  const [cart, setCart] = useState<DetallePedido[]>(JSON.parse(localStorage.getItem('cart')|| '[]'));
   // const pedidoDetalleService = new DetallePedidoService();
   const pedidoService = new PedidoService();
   const url = import.meta.env.VITE_API_URL;
@@ -56,6 +56,8 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
   }, [sucursalId]); // Dependencia actualizada
 
   const addCarrito = (product: ArticuloDto) => {
+    setCart(JSON.parse(localStorage.getItem('cart')|| '[]'))
+
     // lógica para agregar un producto al carrito
     const existe = cart.some((detalle) => detalle.articulo.id === product.id);
 
@@ -68,6 +70,8 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
           : detalle
       );
       setCart(cartClonado);
+
+      localStorage.setItem('cart', JSON.stringify(cartClonado));
     } else {
       const nuevoDetalle: DetallePedido = {
         id: cart.length + 1,
@@ -82,10 +86,14 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       const newCart = [...oldCart, nuevoDetalle];
 
       setCart(newCart);
+
+      localStorage.setItem('cart', JSON.stringify(newCart));
     }
   };
 
   const removeItemCarrito = (product: ArticuloDto) => {
+    setCart(JSON.parse(localStorage.getItem('cart')|| '[]'))
+
     // lógica para eliminar un producto del carrito
     const existe = cart.some((detalle) => detalle.articulo.id === product.id);
     if (existe) {
@@ -97,19 +105,26 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
         )
         .filter((detalle) => detalle.cantidad > 0);
       setCart(cartClonado);
+
+      localStorage.setItem('cart', JSON.stringify(cartClonado));
     }
   };
 
   const removeCarrito = (product: ArticuloDto) => {
+    setCart(JSON.parse(localStorage.getItem('cart')|| '[]'))
+
     // lógica para eliminar un producto completamente del carrito
     setCart((prevCart) =>
       prevCart.filter((detalle) => detalle.articulo.id !== product.id)
     );
+
+    localStorage.setItem('cart', JSON.stringify(cart));
   };
 
   const limpiarCarrito = () => {
     // lógica para limpiar todo el carrito
     setCart([]);
+    localStorage.setItem('cart', JSON.stringify([]));
   };
 
   const crearPedidoDetalle = async (): Promise<number> => {
