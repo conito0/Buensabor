@@ -19,8 +19,8 @@ export const BaseNavBar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-primary">
       <div className="container-fluid ms-3">
-        <a className="navbar-brand text-white" href="/">
-          Inicio
+        <a className="navbar-brand text-white">
+          Buen Sabor
         </a>
         <button
             className="navbar-toggler"

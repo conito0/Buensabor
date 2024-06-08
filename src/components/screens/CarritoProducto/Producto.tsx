@@ -143,7 +143,7 @@ const Producto = () => {
           <div className="row">
             <CarritoContextProvider>
               <div className="col-md-9">
-              <select className="form-control custom-select" onChange={handleCategoryFilter}>
+              <select className="w-100 form-control custom-select" onChange={handleCategoryFilter}>
                 <option value="">Todas las categorías</option>
                 {categorias.map((categoria) => (
                   <option key={categoria.id} value={categoria.id}>
