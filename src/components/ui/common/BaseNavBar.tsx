@@ -39,15 +39,6 @@ export const BaseNavBar = () => {
               <a
                   className="nav-link active text-white"
                   aria-current="page"
-                  href="/home"
-              >
-                Home
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                  className="nav-link active text-white"
-                  aria-current="page"
                   href="/carrito"
               >
                 Productos
