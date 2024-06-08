@@ -9,37 +9,44 @@ interface CartItemProps {
 
 function CartItem({ detalle }: CartItemProps) {
   return (
-    <div className="cart-item" key={detalle.id}>
-      <img
-        width={50}
-        height={50}
-        src={`${detalle.articulo.imagen.url}`}
-        alt={detalle.articulo.denominacion}
-      />
-      <div>
-        <strong>{detalle.articulo.denominacion}</strong> - ${detalle.articulo.precioVenta}
+      <div className="w-100 cart-item d-flex flex-row align-items-center" key={detalle.id}>
+          <img
+              width={50}
+              height={50}
+              src={`${detalle.articulo.imagen.url}`}
+              alt={detalle.articulo.denominacion}
+          />
+          <div className={"w-100 text-left"}>
+              <div>
+                  <b className={"text-truncate"}>
+                      {detalle.articulo.denominacion}
+                  </b>
+              </div>
+              <div>
+                  ${detalle.articulo.precioVenta}
+              </div>
+              <div>
+                  <b>
+                      {detalle.cantidad} {detalle.cantidad === 1 ? "unidad" : "unidades"}{" "}
+                  </b>
+              </div>
+              <hr/>
+          </div>
       </div>
-      <div>
-        <b>
-          {detalle.cantidad} {detalle.cantidad === 1 ? "unidad" : "unidades"}{" "}
-        </b>
-        <p>{detalle.cantidad} {detalle.articulo.denominacion}</p>
-      </div>
-    </div>
   );
 }
 
 export const Carrito = () => {
-  const { cart, limpiarCarrito, crearPedidoDetalle } = useCarrito();
-  const [idPedido, setIdPedido] = useState<number | undefined>();
-  const totalProductos = cart.reduce((total, detalle) => total + detalle.articulo.precioVenta * detalle.cantidad, 0);
-  const [pedidoCreado, setPedidoCreado] = useState(false);
+    const {cart, limpiarCarrito, crearPedidoDetalle} = useCarrito();
+    const [idPedido, setIdPedido] = useState<number | undefined>();
+    const totalProductos = cart.reduce((total, detalle) => total + detalle.articulo.precioVenta * detalle.cantidad, 0);
+    const [pedidoCreado, setPedidoCreado] = useState(false);
 
-  const handleGenerarPedido = async () => {
-    try {
-      const nuevoIdPedido = await crearPedidoDetalle();
-      setIdPedido(nuevoIdPedido);
-      setPedidoCreado(true)
+    const handleGenerarPedido = async () => {
+        try {
+            const nuevoIdPedido = await crearPedidoDetalle();
+            setIdPedido(nuevoIdPedido);
+            setPedidoCreado(true)
       setTimeout(() => {
         limpiarCarrito();
         setIdPedido(undefined);
@@ -59,22 +66,20 @@ export const Carrito = () => {
   return (
     <div className="text-center">
       <label className="cart-button">
-        <i>Items del Pedido</i>
+        <i>Carrito de Compras</i>
       </label>
 
       <aside className="cart">
         {cart.length === 0 ? (
-          <p className="text-danger">Sin instrumentos en el carrito.</p>
+          <p className="text-danger">Sin productos en el carrito.</p>
         ) : (
           <>
-            <ul>
               {cart.map((detalle, index) => (
                 <CartItem
                   detalle={detalle}
                   key={index}
                 />
               ))}
-            </ul>
             <div>
               <h3>${totalProductos}</h3>
             </div>
