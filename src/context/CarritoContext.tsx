@@ -79,8 +79,9 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
         cantidad: 1,
         subTotal: product.precioVenta,
         articulo: product,
-        // pedido: new Pedido(),
       };
+      nuevoDetalle.subTotal = nuevoDetalle.articulo.precioVenta * nuevoDetalle.cantidad;
+
       const oldCart = cart;
 
       const newCart = [...oldCart, nuevoDetalle];
@@ -134,6 +135,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
         const pedidoDetalle = new DetallePedido();
         pedidoDetalle.articulo = detalle.articulo;
         pedidoDetalle.cantidad = detalle.cantidad;
+        pedidoDetalle.subTotal = detalle.articulo.precioVenta * detalle.cantidad;
         return pedidoDetalle;
       });
       console.log(cart);
@@ -175,8 +177,8 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       const nuevoPedido = new Pedido();
       nuevoPedido.fechaPedido = fechaActual;
       nuevoPedido.total = cart.reduce((total, detalle) => total + detalle.articulo.precioVenta * detalle.cantidad, 0);
-      nuevoPedido.detallePedidos = cart;
-      nuevoPedido.horaEstimadaFinalizacion = `${horaEstimada}:${minutosEstimados}`;
+      nuevoPedido.detallePedidos = detallesConPedido;
+      nuevoPedido.horaEstimadaFinalizacion = `${tiempoEstimado}`;
       if (sucursal) {
         nuevoPedido.sucursal = sucursal;
       } else {
