@@ -20,6 +20,43 @@ const Producto = () => {
   const categoriaService = new CategoriaService();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
+  const estaEnHorarioDeAtencion = (date: Date) => {
+    // Obtén el día de la semana y la hora
+    const diaSemana = date.getDay(); // 0 (domingo) - 6 (sábado)
+    const horas = date.getHours();
+    const minutos = date.getMinutes();
+
+    // Función auxiliar para comparar tiempos
+    const estaDentroRango = (horaInicio: any, minInicio: any, horaFin: any, minFin: any) => {
+      const tiempoActual = horas * 60 + minutos;
+      const tiempoInicio = horaInicio * 60 + minInicio;
+      const tiempoFin = horaFin * 60 + minFin;
+
+      if (tiempoInicio < tiempoFin) {
+        // Rango normal (mismo día)
+        return tiempoActual >= tiempoInicio && tiempoActual < tiempoFin;
+      } else {
+        // Rango nocturno (cruza medianoche)
+        return tiempoActual >= tiempoInicio || tiempoActual < tiempoFin;
+      }
+    }
+
+    // Definir los rangos horarios
+    const horarioLunesADomingo = estaDentroRango(20, 0, 12, 0);
+    const horarioSabadoDomingo = estaDentroRango(11, 0, 15, 0);
+
+    // Verificar si es fin de semana
+    const esFinDeSemana = (diaSemana === 6) || (diaSemana === 0);
+
+    if (esFinDeSemana) {
+      // Sábados y domingos tienen dos rangos horarios
+      return horarioLunesADomingo || horarioSabadoDomingo;
+    } else {
+      // Lunes a viernes solo tienen un rango horario
+      return horarioLunesADomingo;
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       const productData = await productoService.getAll(url + 'articuloManufacturado');
@@ -74,6 +111,17 @@ const Producto = () => {
     ))
   }
 
+  if(!estaEnHorarioDeAtencion(new Date())) {
+    return (
+        <>
+          <BaseNavBar/>
+          <div style={{height: "calc(100vh - 56px)"}} className={"d-flex p-5 text-center flex-column justify-content-center align-items-center w-100"}>
+            <div className={"h1"}><b>El local se encuentra cerrado en este momento</b></div>
+            <div>Horario: Lunes a domingos de 20:00 a 12:00, y de sábados y domingos de 11:00 a 15:00.</div>
+          </div>
+        </>
+    );
+  }
 
   if (productos.length === 0) {
     return (
