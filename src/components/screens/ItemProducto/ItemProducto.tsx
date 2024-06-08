@@ -27,9 +27,9 @@ function ItemProducto(args: ProductoParams) {
         <>
           <div className="image-container p-1 rounded-image">
             <img
-              src={args.imagenes[0].url}
+              src={args.imagenes[0]?.url}
               className="card-img-top img-thumbnail img-custom rounded-image"
-              alt={args.imagenes[0].name}
+              alt={args.imagenes[0]?.name}
             />
           </div>
         </>
