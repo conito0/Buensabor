@@ -17,6 +17,11 @@ const AppRouter = () => {
       <Route path="/inicio/:sucursalId" element={<><BaseNavBar /><Inicio /></>} /> 
       <Route path="/sucursal/:empresaId" element={<><BaseNavBar /><ListaSucursal /></>} />
       <Route path="/carrito/:sucursalId" element={<Producto />} />
+      <Route path="/productos/:sucursalId" element={<><BaseNavBar /><Producto /></>} /> 
+      <Route path="/categorias/:sucursalId" element={<><BaseNavBar /><Categoria /></>} /> 
+      <Route path="/articuloInsumo/:sucursalId" element={<><BaseNavBar /><ListaArticulosInsumo /></>} /> 
+      <Route path="/articuloManufacturado/:sucursalId" element={<><BaseNavBar /><ListaProductos /></>} />
+      <Route path="/pedidos/:sucursalId" element={<><BaseNavBar /><ListaPedidos /></>} /> 
 
     </Routes>
   );

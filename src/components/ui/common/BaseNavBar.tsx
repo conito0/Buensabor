@@ -37,11 +37,47 @@ export const BaseNavBar = () => {
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
               <a
-                  className="nav-link active text-white"
-                  aria-current="page"
-                  href="/carrito"
-              >
+                className="nav-link active text-white"
+                aria-current="page"
+                href="/carrito/1"
+                >
                 Productos
+              </a>
+            </li>
+            <li className="nav-item">
+              <a
+                className="nav-link active text-white"
+                aria-current="page"
+                href="/categorias/1"
+              >
+                Categorias
+              </a>
+            </li>
+            <li className="nav-item">
+              <a
+                className="nav-link active text-white"
+                aria-current="page"
+                href="/articuloManufacturado/1"
+              >
+                Articulos Manufacturados
+              </a>
+            </li>
+            <li className="nav-item">
+              <a
+                className="nav-link active text-white"
+                aria-current="page"
+                href="/articuloInsumo/1"
+              >
+                Articulos Insumos
+              </a>
+            </li>
+            <li className="nav-item">
+              <a
+                className="nav-link active text-white"
+                aria-current="page"
+                href="/pedidos/1"
+              >
+                Pedidos
               </a>
             </li>
           </ul>
