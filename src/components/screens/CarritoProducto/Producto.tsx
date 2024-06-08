@@ -2,7 +2,10 @@ import { useEffect, useState, useContext } from "react";
 import ArticuloManufacturadoService from "../../../services/ArticuloManufacturadoService";
 import ItemProducto from "../ItemProducto/ItemProducto";
 import ArticuloDto from "../../../types/dto/ArticuloDto";
-import { CarritoContextProvider, CartContext } from "../../../context/CarritoContext";
+import {
+  CarritoContextProvider,
+  CartContext,
+} from "../../../context/CarritoContext";
 import { Carrito } from "../../ui/carrito/Carrito";
 import ArticuloInsumoService from "../../../services/ArticuloInsumoService";
 import Categoria from "../../../types/Categoria";
@@ -12,8 +15,8 @@ import { BaseNavBar } from "../../ui/common/BaseNavBar";
 import IArticuloInsumo from "../../../types/ArticuloInsumoType";
 import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
 import { Button } from "react-bootstrap";
-import Domicilio from "../../../types/Domicilio";
 import DeliveryModal from "../../ui/Modal/Delivery/Delivery";
+import { TipoEnvio } from "../../../types/enums/TipoEnvio";
 
 const Producto = () => {
   const [productos, setProductos] = useState<ArticuloDto[]>([]);
@@ -24,8 +27,9 @@ const Producto = () => {
   const categoriaService = new CategoriaService();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [articuloInsumo, setArticuloInsumo] = useState<IArticuloInsumo[]>([]);
-  const [articuloManufacturado, setArticuloManufacturado] = useState<IArticuloManufacturado[]>([]);
-
+  const [articuloManufacturado, setArticuloManufacturado] = useState<
+    IArticuloManufacturado[]
+  >([]);
 
   const estaEnHorarioDeAtencion = (date: Date) => {
     const diaSemana = date.getDay();
@@ -48,7 +52,7 @@ const Producto = () => {
         return tiempoActual >= tiempoInicio || tiempoActual < tiempoFin;
       }
     };
-    
+
     const horarioLunesADomingo = estaDentroRango(0, 0, 23, 59);
     const horarioSabadoDomingo = estaDentroRango(0, 0, 23, 59);
 
@@ -61,7 +65,6 @@ const Producto = () => {
     }
   };
 
-
   useEffect(() => {
     const fetchData = async () => {
       const productData = await productoService.getAll(
@@ -72,9 +75,9 @@ const Producto = () => {
       );
 
       // Filtrar los productos manufacturados y los insumos
-      const insumos = insumData.filter(insumo => !insumo.esParaElaborar);
-      setArticuloManufacturado(productData)
-      setArticuloInsumo(insumos)
+      const insumos = insumData.filter((insumo) => !insumo.esParaElaborar);
+      setArticuloManufacturado(productData);
+      setArticuloInsumo(insumos);
       // Combinar los productos manufacturados y los insumos en un solo array
 
       const combinedData = [...productData, ...insumos];
@@ -118,7 +121,6 @@ const Producto = () => {
       </div>
     ));
   }
-
 
   if (!estaEnHorarioDeAtencion(new Date())) {
     return (
@@ -197,7 +199,10 @@ const Producto = () => {
             </div>
             <div className="col-md-3 mt-3">
               <div className="card carrito-card">
-                <Carrito insumos={articuloInsumo} productos={articuloManufacturado}></Carrito>
+                <Carrito
+                  insumos={articuloInsumo}
+                  productos={articuloManufacturado}
+                ></Carrito>
                 <CarritoButtons />
               </div>
             </div>
@@ -210,36 +215,63 @@ const Producto = () => {
 
 const CarritoButtons = () => {
   const { cart } = useContext(CartContext);
-  
-  const [showModal, setShowModal] = useState(false);
+  // Agregamos un estado para el tipo de envío
 
-  const handleShow = () => setShowModal(true);
-  const handleClose = () => setShowModal(false);
+  const maxTiempoEstimado =
+    cart.length > 0
+      ? Math.max(...cart.map((item) => item.articulo.tiempoEstimadoMinutos))
+      : 0;
+  const [showModalDelivery, setShowModalDelivery] = useState(false); // Estado para controlar la visibilidad del modal
+  const [showModalPago, setShowModalPago] = useState(false); // Estado para controlar la visibilidad del modal
+  const [tipoEnvio, setTipoEnvio] = useState("DELIVERY"); // Estado para el tipo de envío
 
-  const handleSave = (domicilio: Domicilio) => {
-    // Handle the save logic here
-    console.log('Domicilio saved:', domicilio);
+  // Función para abrir el modal
+  const handleOpenModalPago = (tipo: TipoEnvio) => {
+    setTipoEnvio(tipo); // Establece el tipo de envío
+    setShowModalPago(true);
   };
 
-  const maxTiempoEstimado = cart.length > 0 
-    ? Math.max(...cart.map(item => item.articulo.tiempoEstimadoMinutos))
-    : 0;
+  // Función para cerrar el modal
+  const handleCloseModalPago = () => {
+    setShowModalPago(false);
+  };
 
+  // Función para abrir el modal
+  const handleOpenModalDelivery = () => {
+    setShowModalDelivery(true);
+  };
+
+  // Función para cerrar el modal
+  const handleCloseModalDelivery = () => {
+    setShowModalDelivery(false);
+  };
   return (
     <div className="d-flex justify-content-center my-3">
-      <button className="btn btn-primary mx-2">
-        Local
+      <button
+        className="btn btn-primary mx-2"
+        onClick={() => handleOpenModalPago(TipoEnvio.TAKEAWAY)}
+      >
+        Retiro
         <div>{maxTiempoEstimado} minutos</div>
       </button>
       <div>
-      <Button className="btn btn-secondary mx-2" onClick={handleShow}>
-        Delivery
-        <div>{maxTiempoEstimado + 20} minutos</div>
-      </Button>
-      <DeliveryModal show={showModal} handleClose={handleClose} handleSave={handleSave} />
-    </div>
+        <Button
+          className="btn btn-secondary mx-2"
+          onClick={handleOpenModalDelivery}
+        >
+          Delivery
+          <div>{maxTiempoEstimado + 20} minutos</div>
+        </Button>
+      </div>
+      <DeliveryModal
+        show={showModalDelivery} // Pasa el estado de visibilidad
+        handleClose={handleCloseModalDelivery} // Pasa la función para cerrar el modal
+        handleSave={(domicilio) => {
+          // Aquí puedes manejar la lógica para guardar el domicilio
+          console.log("Domicilio guardado:", domicilio);
+        }}
+      />
     </div>
   );
 };
-
 export default Producto;

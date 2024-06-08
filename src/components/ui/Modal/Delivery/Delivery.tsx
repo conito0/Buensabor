@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import Domicilio from "../../../../types/Domicilio";
 import LocalidadService from "../../../../services/LocalidadService";
@@ -17,7 +17,7 @@ interface DeliveryModalProps {
 const DeliveryModal: React.FC<DeliveryModalProps> = ({
   show,
   handleClose,
-  handleSave,
+  handleSave
 }) => {
   const [domicilio, setDomicilio] = useState<Domicilio>(new Domicilio());
   const [paises, setPaises] = useState<Pais[]>([]);
@@ -146,7 +146,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({
   return (
     <Modal show={show} onHide={handleClose} dialogClassName="modal-xl">
       <Modal.Header closeButton>
-        <Modal.Title>Ingresar Domicilio</Modal.Title>
+        <Modal.Title>Ingresar Domicilio donde se llevará el pedido</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
