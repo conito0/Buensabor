@@ -36,13 +36,17 @@ function ItemProducto(args: ProductoParams) {
       )}
 
       <div className="card-body altura-cuerpo">
-        <h5 className="card-title">{args.denominacion}</h5>
+        <h5 className="card-title text-truncate">{args.denominacion}</h5>
         <div className="precio-container">
           <p className="card-text h2">$ {args.precioVenta}</p>
         </div>
-        <p className={`card-text`}>{args.descripcion}</p>
-        <p className='card-text'>Tiempo de preparación: {args.tiempoEstimadoMinutos} minutos</p>
-        <hr />
+        <p className={`card-text text-truncate`}>{args.descripcion}</p>
+        {args.tiempoEstimadoMinutos
+            ? <p className='card-text'>Preparación: {args.tiempoEstimadoMinutos} minutos</p>
+            : <div style={{lineHeight: "1.5rem", height: "1.5rem"}}></div>
+        }
+
+        <hr/>
         <div className="d-flex justify-content-center align-items-center">
 
           <div className="icon-container d-flex justify-content-between align-items-center mb-2">
