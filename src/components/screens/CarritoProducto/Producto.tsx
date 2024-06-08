@@ -9,6 +9,8 @@ import Categoria from "../../../types/Categoria";
 import CategoriaService from "../../../services/CategoriaService";
 import "./Producto.css";
 import { BaseNavBar } from "../../ui/common/BaseNavBar";
+import IArticuloInsumo from "../../../types/ArticuloInsumoType";
+import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
 
 const Producto = () => {
   const [productos, setProductos] = useState<ArticuloDto[]>([]);
@@ -18,6 +20,8 @@ const Producto = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const categoriaService = new CategoriaService();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [articuloInsumo, setArticuloInsumo] = useState<IArticuloInsumo[]>([]);
+  const [articuloManufacturado, setArticuloManufacturado] = useState<IArticuloManufacturado[]>([]);
 
   const estaEnHorarioDeAtencion = (date: Date) => {
     const diaSemana = date.getDay();
@@ -53,6 +57,7 @@ const Producto = () => {
     }
   };
 
+
   useEffect(() => {
     const fetchData = async () => {
       const productData = await productoService.getAll(
@@ -62,7 +67,11 @@ const Producto = () => {
         url + "articuloInsumo"
       );
 
-      const insumos = insumData.filter((insumo) => !insumo.esParaElaborar);
+      // Filtrar los productos manufacturados y los insumos
+      const insumos = insumData.filter(insumo => !insumo.esParaElaborar);
+      setArticuloManufacturado(productData)
+      setArticuloInsumo(insumos)
+      // Combinar los productos manufacturados y los insumos en un solo array
 
       const combinedData = [...productData, ...insumos];
 
@@ -105,6 +114,7 @@ const Producto = () => {
       </div>
     ));
   }
+
 
   if (!estaEnHorarioDeAtencion(new Date())) {
     return (
@@ -183,7 +193,7 @@ const Producto = () => {
             </div>
             <div className="col-md-3 mt-3">
               <div className="card carrito-card">
-                <Carrito></Carrito>
+                <Carrito insumos={articuloInsumo} productos={articuloManufacturado}></Carrito>
                 <CarritoButtons />
               </div>
             </div>

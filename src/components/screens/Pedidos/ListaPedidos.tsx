@@ -109,11 +109,6 @@ export const ListaPedidos = () => {
     }
   };
 
-  const handleAddProduct = () => {
-    // Reset cuponToEdit to null when adding a new cupon
-    setPedidoToEdit(null);
-    dispatch(toggleModal({ modalName: "modal" }));
-  };
 
   const handleOpenEditModal = (rowData: Row) => {
     setPedidoToEdit({
@@ -170,6 +165,17 @@ export const ListaPedidos = () => {
     }
     
   ];
+  if (filteredData.length === 0) {
+    return (
+        <>
+          <div style={{height: "calc(100vh - 56px)"}} className={"d-flex flex-column justify-content-center align-items-center w-100"}>
+            <div className="spinner-border" role="status">
+            </div>
+            <div>Cargando los pedidos</div>
+          </div>
+        </>
+    );
+  }
 
   return (
   <React.Fragment>
