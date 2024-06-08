@@ -15,12 +15,14 @@ import UnidadMedida from "../../../../types/UnidadMedida.ts";
 import Categoria from "../../../../types/Categoria.ts";
 import ModalInsumo from "./ModalInsumo.tsx";
 import ArticuloManufacturadoDetalle from "../../../../types/ArticuloManufacturadoDetalle.ts";
-import ArticuloInsumoShortDto from "../../../../types/dto/ArticuloInsumoShortDto.ts";
-import ArticuloInsumoShortService from "../../../../services/dtos/ArticuloInsumoShortService.ts";
+// import ArticuloInsumoShortDto from "../../../../types/dto/ArticuloInsumoShortDto.ts";
+// import ArticuloInsumoShortService from "../../../../services/dtos/ArticuloInsumoShortService.ts";
 // import CategoriaShorService from '../../../../services/dtos/CategoriaShorService.ts';
 // import CategoriaShorDto from '../../../../types/dto/CategoriaShorDto.ts';
 import ArticuloManufacturadoDetalleService from "../../../../services/ArticuloManufacturadoDetalleService.ts";
 import { useParams } from "react-router-dom";
+import IArticuloInsumo from "../../../../types/ArticuloInsumoType.ts";
+import ArticuloInsumoService from "../../../../services/ArticuloInsumoService.ts";
 
 interface ModalProductProps {
   getProducts: () => void;
@@ -34,13 +36,13 @@ const ModalProducto: React.FC<ModalProductProps> = ({
   const productoService = new ArticuloManufacturadoService();
   const unidadService = new UnidadMedidaService();
   // const insumoService = new ArticuloInsumoService();
-  const insumoService = new ArticuloInsumoShortService();
+  const insumoService = new ArticuloInsumoService();
   const { sucursalId } = useParams();
   const categoriaService = new CategoriaService();
   // const categoriaService = new CategoriaShorService();
   const articuloDetalleService = new ArticuloManufacturadoDetalleService();
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
-  const [insumos, setInsumos] = useState<ArticuloInsumoShortDto[]>([]);
+  const [insumos, setInsumos] = useState<IArticuloInsumo[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   // const [selectedInsumo, setSelectedInsumo] = useState<number | null>(null);
   const [showInsumoModal, setShowInsumoModal] = useState(false);
@@ -58,8 +60,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
     eliminado: productToEdit ? productToEdit.eliminado : false,
     denominacion: productToEdit?.denominacion || "",
     precioVenta: productToEdit?.precioVenta || 0,
-    imagenes:
-      productToEdit?.imagenes?.map((imagen: any) => imagen.denominacion) || [],
+    imagenes: productToEdit?.imagenes?.map((imagen: any) => imagen.denominacion) || [],
     unidadMedida: productToEdit?.unidadMedida
       ? { ...productToEdit.unidadMedida }
       : {
@@ -84,6 +85,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
             precioCompra: detalle.precioCompra,
             stockActual: detalle.stockActual,
             stockMaximo: detalle.stockMaximo,
+            stockMinimo: detalle.stockMinimo,
             esParaElaborar: detalle.esParaElaborar,
             categoria: detalle.articuloInsumo.categoria
               ? {
@@ -487,15 +489,24 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     name="imagen"
                     type="file"
                     onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                      handleFileChange(event);
+                      const files = event.target.files;
+                      if (files && files.length > 0) {
+                        // Si se selecciona una imagen nueva, maneja el cambio de archivo
+                        handleFileChange(event);
+                      } else {
+                        
+                        // Si no se selecciona ninguna imagen nueva, no hagas nada para mantener las imágenes existentes
+                      }
                     }}
                     className="form-control my-2"
                   />
+
                   <ErrorMessage
                     name="imagen"
                     className="error-message"
                     component="div"
                   />
+
                 </Col>
               </Row>
               <Row>

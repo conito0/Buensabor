@@ -16,3 +16,8 @@
 .precio-container {
   text-align: center;
 }
+
+.img-custom {
+  height: 236px;
+  object-fit: contain;
+}

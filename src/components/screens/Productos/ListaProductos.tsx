@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Typography, Button, Container } from "@mui/material";
-import { Add } from "@mui/icons-material";
+import { Box, Typography, Container } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { setArticuloManufacturado } from "../../../redux/slices/ArticuloManufacturado";
 import { toggleModal } from "../../../redux/slices/Modal";
@@ -12,8 +11,6 @@ import ModalProducto from "../../ui/Modal/Producto/ModalProducto.tsx";
 import ModalEliminarProducto from "../../ui/Modal/Producto/ModalEliminarProducto.tsx";
 //import {handleSearch} from "../../../utils.ts/utils.ts";
 import { CCol, CContainer, CRow } from "@coreui/react";
-import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
-import Sidebar from "../../ui/Sider/SideBar.tsx";
 import UnidadMedida from "../../../types/UnidadMedida.ts";
 import { handleSearch } from "../../../utils.ts/utils.ts";
 import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
@@ -223,13 +220,8 @@ export const ListaProductos = () => {
 
   return (
   <React.Fragment>
-    <BaseNavBar title="" />
     <CContainer fluid style={{backgroundColor: "#fff"}}>
       <CRow>
-        {/* Sidebar */}
-        <CCol xs="auto" className="sidebar">
-          <Sidebar />
-        </CCol>
         <CCol>
           <Box
             component="main"
@@ -252,21 +244,15 @@ export const ListaProductos = () => {
                 }}
               >
                 <Typography variant="h5" gutterBottom>
-                  Productos
+                  Artículos Manufacturados
                 </Typography>
-                <Button
-                  sx={{
-                    bgcolor: "#9c27b0", // Terracota
-                    "&:hover": {
-                      bgcolor: "#9c27b0", // Terracota más oscuro al pasar el mouse
-                    },
-                  }}
-                  variant="contained"
-                  startIcon={<Add />}
+                <button
+                  className="btn btn-primary"
                   onClick={handleAddProduct}
                 >
-                  Producto
-                </Button>
+                  +
+                  Artículos Manufacturados
+                </button>
               </Box>
               {/* Barra de búsqueda */}
               <Box sx={{ mt: 2 }}>

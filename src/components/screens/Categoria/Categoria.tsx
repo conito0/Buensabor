@@ -3,7 +3,6 @@ import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import SearchBar from "../../ui/SearchBar/SearchBar";
 import CategoriaService from "../../../services/CategoriaService";
-import CategoriaLista from "./CategoriaLista";
 import ModalCategoria from "../../ui/Modal/Categoria/ModalCategoria.tsx";
 import ModalEliminarCategoria from "../../ui/Modal/Categoria/ModalEliminarCategoria.tsx";
 import ICategoria from "../../../types/Categoria";
@@ -11,9 +10,8 @@ import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { setCategoria } from "../../../redux/slices/Categoria";
 import { handleSearch } from "../../../utils.ts/utils.ts";
 import { CCol, CContainer, CRow } from "@coreui/react";
-import Sidebar from "../../ui/Sider/SideBar.tsx";
-import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import { useParams } from "react-router-dom";
+import ListaCategoria from "./ListaCategoria.tsx";
 
 const Categoria = () => {
   const url = import.meta.env.VITE_API_URL;
@@ -116,13 +114,8 @@ const Categoria = () => {
 
   return (
     <React.Fragment>
-      <BaseNavBar title="" />
       <CContainer fluid style={{backgroundColor: "#fff"}}>
         <CRow>
-          {/* Sidebar */}
-          <CCol xs="auto" className="sidebar">
-            <Sidebar />
-          </CCol>
           <CCol>
             <Box component="main" sx={{ flexGrow: 1, my: 2 }}>
               <Container>
@@ -154,7 +147,7 @@ const Categoria = () => {
                 <Box sx={{ mt: 2 }}>
                   <SearchBar onSearch={onSearch} />
                 </Box>
-                <CategoriaLista
+                <ListaCategoria
                   categorias={filteredData}
                   onEditar={handleEditarCategoria}
                   onDelete={handleEliminarCategoria}

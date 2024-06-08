@@ -9,7 +9,7 @@ import { ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon, MoreVert as
 import Categoria from '../../../types/Categoria';
 import ModalSubCategoria from '../../ui/Modal/Categoria/ModalSubCategoria';
 
-interface CategoriaListaProps {
+interface ListaCategoriaProps {
     categorias: Categoria[];
     getCategories: () => void;
     onEditar: (categoria: Categoria) => void;
@@ -17,7 +17,7 @@ interface CategoriaListaProps {
     onAddSubCategoria: (categoria: Categoria) => void;
 }
 
-const CategoriaLista: React.FC<CategoriaListaProps> = ({ categorias, onEditar, onDelete, getCategories }) => {
+const ListaCategoria: React.FC<ListaCategoriaProps> = ({ categorias, onEditar, onDelete, getCategories }) => {
     const [openMap, setOpenMap] = React.useState<{ [key: number]: boolean }>({});
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
     const [selectedCategoria, setSelectedCategoria] = React.useState<Categoria | null>(null);
@@ -128,4 +128,4 @@ const CategoriaLista: React.FC<CategoriaListaProps> = ({ categorias, onEditar, o
     );
   };
   
-  export default CategoriaLista;
+  export default ListaCategoria;

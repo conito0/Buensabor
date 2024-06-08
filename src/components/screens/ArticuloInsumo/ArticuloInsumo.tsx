@@ -1,21 +1,18 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Box, Typography, Button, Container } from "@mui/material";
-import { Add } from "@mui/icons-material";
+import { Box, Typography, Container } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import ArticuloInsumoService from "../../../services/ArticuloInsumoService";
 import { toggleModal } from "../../../redux/slices/Modal";
 import SearchBar from "../../ui/SearchBar/SearchBar";
-import TableComponent from "../../ui/Table/Table";
 import ModalEliminarArticuloInsumo from "../../ui/Modal/ArticuloInsumo/ModalEliminarArticuloInsumo.tsx";
 import ModalArticuloInsumo from "../../ui/Modal/ArticuloInsumo/ModalArticuloInsumo.tsx";
 import ArticuloInsumo from "../../../types/ArticuloInsumoType";
 import {handleSearch} from "../../../utils.ts/utils.ts";
 import { setArticuloInsumo } from "../../../redux/slices/ArticuloInsumo.ts";
 import UnidadMedida from "../../../types/UnidadMedida.ts";
-import Sidebar from "../../ui/Sider/SideBar.tsx";
-import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import { CContainer, CRow, CCol } from "@coreui/react";
 import { useParams } from "react-router-dom";
+import TableComponent from "../../ui/Table/Table.tsx";
 
 interface Row {
   [key: string]: any;
@@ -108,26 +105,6 @@ export const ListaArticulosInsumo = () => {
     setDeleteModalOpen(true);
   };
 
-  // const handleDelete = async () => {
-  //   try {
-  //     if (articuloToEdit && articuloToEdit.id) {
-  //       await articuloInsumoService.delete(
-  //         url + "articuloInsumo",
-  //         articuloToEdit.id.toString()
-  //       );
-  //       console.log("Artículo de insumo eliminado correctamente.");
-  //       handleCloseDeleteModal();
-  //       fetchArticulosInsumo();
-  //     } else {
-  //       console.error(
-  //         "No se puede eliminar el artículo de insumo porque no se proporcionó un ID válido."
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.error("Error al eliminar el artículo de insumo:", error);
-  //   }
-  // };
-
   const handleCloseDeleteModal = () => {
     setDeleteModalOpen(false);
   };
@@ -172,7 +149,6 @@ export const ListaArticulosInsumo = () => {
 
 
   const columns: Column[] = [
-    // { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
     { id: "categoria", label: "Categoría", renderCell: (rowData) => <>{rowData.categoria.denominacion}</> },
     { id: "precioVenta", label: "Precio Venta", renderCell: (rowData) => <>{rowData.precioVenta}</> },
@@ -216,37 +192,10 @@ export const ListaArticulosInsumo = () => {
 
   ];
 
-  {/*
-    {
-      id: "imagenes",
-      label: "Imágenes",
-      renderCell: (rowData) => {
-        const imagenes = rowData.imagenes;
-        if (imagenes && imagenes.length > 0) {
-          return (
-            <div style={{ display: 'flex', gap: '5px' }}>
-              {imagenes.map((imagen: any, index: number) => (
-                <img key={index} src={imagen.url} alt={`Imagen ${index + 1}`} style={{ width: '100px', height: 'auto' }} />
-              ))}
-            </div>
-          );
-        } else {
-          return <span>No hay imágenes disponibles</span>;
-        }
-      }
-    },
-     */}
-
   return (
     <React.Fragment>
-      <BaseNavBar/>
       <CContainer fluid style={{backgroundColor: "#fff"}}>
         <CRow>
-          {/* Sidebar */}
-          <CCol xs="auto" className="sidebar">
-            <Sidebar />
-          </CCol>
-          {/* Contenido principal */}
           <CCol>
             <Box
               component="main"
@@ -271,19 +220,11 @@ export const ListaArticulosInsumo = () => {
                   <Typography variant="h5" gutterBottom>
                     Artículos de Insumo
                   </Typography>
-                  <Button
-                    sx={{
-                      bgcolor: "#9c27b0",
-                      "&:hover": {
-                        bgcolor: "#9c27b0",
-                      },
-                    }}
-                    variant="contained"
-                    startIcon={<Add />}
+                  <button className="btn btn-primary"
                     onClick={handleAddArticuloInsumo}
                   >
-                    Nuevo Artículo
-                  </Button>
+                    + Artículo Insumo
+                  </button>
                 </Box>
                 <Box sx={{ mt: 2 }}>
                   <SearchBar onSearch={onSearch} /> 

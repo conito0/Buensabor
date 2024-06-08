@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import ArticuloManufacturadoService from "../../../services/ArticuloManufacturadoService";
 import ItemProducto from "../ItemProducto/ItemProducto";
-import { BaseNavBar } from "../../ui/common/BaseNavBar";
 import ArticuloDto from "../../../types/dto/ArticuloDto";
 import { CarritoContextProvider } from "../../../context/CarritoContext";
 import { Carrito } from "../../ui/carrito/Carrito";
@@ -9,6 +8,7 @@ import ArticuloInsumoService from "../../../services/ArticuloInsumoService";
 import Categoria from "../../../types/Categoria";
 import CategoriaService from "../../../services/CategoriaService";
 import './Producto.css'
+import { BaseNavBar } from "../../ui/common/BaseNavBar";
 
 const Producto = () => {
 
