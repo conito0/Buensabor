@@ -171,8 +171,6 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       const tiempoEstimado = `${horaEstimadaFormateada}:${minutosEstimadosFormateados}`;
       console.log(`Hora estimada de finalización: ${tiempoEstimado}`);
       
-
-
       // Crea el objeto Pedido
       const nuevoPedido = new Pedido();
       nuevoPedido.fechaPedido = fechaActual;
