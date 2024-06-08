@@ -9,6 +9,8 @@ import Categoria from "../../../types/Categoria";
 import CategoriaService from "../../../services/CategoriaService";
 import './Producto.css'
 import { BaseNavBar } from "../../ui/common/BaseNavBar";
+import IArticuloInsumo from "../../../types/ArticuloInsumoType";
+import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
 
 const Producto = () => {
 
@@ -19,6 +21,8 @@ const Producto = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const categoriaService = new CategoriaService();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [articuloInsumo, setArticuloInsumo] = useState<IArticuloInsumo[]>([]);
+  const [articuloManufacturado, setArticuloManufacturado] = useState<IArticuloManufacturado[]>([]);
 
   const estaEnHorarioDeAtencion = (date: Date) => {
     // Obtén el día de la semana y la hora
@@ -56,7 +60,7 @@ const Producto = () => {
       return horarioLunesADomingo;
     }
   }
-
+  
   useEffect(() => {
     const fetchData = async () => {
       const productData = await productoService.getAll(url + 'articuloManufacturado');
@@ -64,7 +68,8 @@ const Producto = () => {
 
       // Filtrar los productos manufacturados y los insumos
       const insumos = insumData.filter(insumo => !insumo.esParaElaborar);
-
+      setArticuloManufacturado(productData)
+      setArticuloInsumo(insumos)
       // Combinar los productos manufacturados y los insumos en un solo array
       const combinedData = [...productData, ...insumos];
 
@@ -111,17 +116,17 @@ const Producto = () => {
     ))
   }
 
-  if(!estaEnHorarioDeAtencion(new Date())) {
-    return (
-        <>
-          <BaseNavBar/>
-          <div style={{height: "calc(100vh - 56px)"}} className={"d-flex p-5 text-center flex-column justify-content-center align-items-center w-100"}>
-            <div className={"h1"}><b>El local se encuentra cerrado en este momento</b></div>
-            <div>Horario: Lunes a domingos de 20:00 a 12:00, y de sábados y domingos de 11:00 a 15:00.</div>
-          </div>
-        </>
-    );
-  }
+  // if(!estaEnHorarioDeAtencion(new Date())) {
+  //   return (
+  //       <>
+  //         <BaseNavBar/>
+  //         <div style={{height: "calc(100vh - 56px)"}} className={"d-flex p-5 text-center flex-column justify-content-center align-items-center w-100"}>
+  //           <div className={"h1"}><b>El local se encuentra cerrado en este momento</b></div>
+  //           <div>Horario: Lunes a domingos de 20:00 a 12:00, y de sábados y domingos de 11:00 a 15:00.</div>
+  //         </div>
+  //       </>
+  //   );
+  // }
 
   if (productos.length === 0) {
     return (
@@ -171,7 +176,7 @@ const Producto = () => {
             </div>
             <div className="col-md-3 mt-3">
               <div className="card carrito-card">
-                <Carrito></Carrito>
+                <Carrito insumos={articuloInsumo} productos={articuloManufacturado}></Carrito>
               </div>
             </div>
           </CarritoContextProvider>

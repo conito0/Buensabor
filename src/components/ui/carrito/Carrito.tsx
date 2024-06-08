@@ -1,43 +1,130 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCarrito } from "../../../hooks/useHooks"
 import DetallePedido from "../../../types/DetallePedido";
 import './Carrito.css'
 import {useAuth0} from "@auth0/auth0-react";
+import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
+import IArticuloInsumo from "../../../types/ArticuloInsumoType";
+import ArticuloManufacturadoService from "../../../services/ArticuloManufacturadoService";
+import ArticuloInsumoService from "../../../services/ArticuloInsumoService";
+// import ArticuloDto from "../../../types/dto/ArticuloDto";
 
 interface CartItemProps {
   detalle: DetallePedido;
+  insumos : IArticuloInsumo[];
+  productos: IArticuloManufacturado[]
 }
 
-function CartItem({ detalle }: CartItemProps) {
-  return (
+const verificarStockInsuficiente = async (detalle: DetallePedido, insumos: IArticuloInsumo[], productos: IArticuloManufacturado[]) => {
+    const productoService = new ArticuloManufacturadoService();
+    const articuloInsumoService = new ArticuloInsumoService();
+    const url = import.meta.env.VITE_API_URL;
+    const idArticulo = detalle.articulo.id.toString();
+
+    try {
+        let stockInsuficiente = false;
+
+        // Verificar si el artículo existe en los artículos insumos  
+        const encontradoEnInsumos = insumos.find(insumo => insumo.id === detalle.articulo.id);
+        if (encontradoEnInsumos) {
+            const insumoId = detalle.articulo.id;
+            const cantidad = detalle.cantidad;
+
+            const insumData = await articuloInsumoService.descontarStock(url + `articuloInsumo/descontarStock`, insumoId, cantidad);
+
+            console.log(insumData)
+            if (insumData < encontradoEnInsumos.stockMinimo) {
+                stockInsuficiente = true;
+            }
+        } else {
+            // Si no se encuentra en los insumos, buscar en los artículos manufacturados
+            const encontradoEnManufacturados = productos.some(manufacturado => manufacturado.id === detalle.articulo.id);
+
+            if (encontradoEnManufacturados) {
+                const productData = await productoService.get(url + 'articuloManufacturado', idArticulo);
+                // Iterar sobre cada detalle de articuloManufacturadoDetalles
+                for (const detalleProducto of productData.articuloManufacturadoDetalles) {
+                    // Verificar si el detalle tiene un atributo 'articuloInsumo'
+                    if (detalleProducto.articuloInsumo) {
+                        const stockMinimo = detalleProducto.articuloInsumo.stockMinimo;
+                        const insumoId = detalleProducto.articuloInsumo.id;
+                        const cantidadProduct = detalleProducto.cantidad * detalle.cantidad;
+
+                        const insumData = await articuloInsumoService.descontarStock(url + `articuloInsumo/descontarStock`, insumoId, cantidadProduct);
+                        console.log(insumData)
+
+                        if(insumData < stockMinimo){
+                            stockInsuficiente = true;
+                            break; // Si encontramos un stock insuficiente, no es necesario seguir iterando
+                        }
+                    }
+                }
+            } 
+        }
+
+        return stockInsuficiente;
+    } catch (error) {
+        console.error("Error al verificar el stock:", error);
+        return true; // Si hay un error, consideramos que hay stock insuficiente
+    }
+};
+
+function CartItem({ detalle, insumos, productos}: CartItemProps) {
+    const [stockInsuficiente, setStockInsuficiente] = useState(false);
+  
+    useEffect(() => {
+        verificarStockInsuficiente(detalle, insumos, productos)
+        .then(resultado => {
+            console.log("Resultado: ",resultado)
+            if (resultado === false) {
+                setStockInsuficiente(false);
+                console.log("stock suficiente")
+            } else {
+                setStockInsuficiente(true);
+                console.log("stock insuficiente")
+            }
+        })
+        .catch(error => {
+            console.error("Ocurrió un error al verificar el stock:", error);
+        });
+    }, [detalle, detalle.cantidad, insumos, productos]);
+    
+
+    console.log(stockInsuficiente)
+
+    if (stockInsuficiente) {
+      return <div>Sin stock insuficiente de {detalle.articulo.denominacion}</div>;
+    }
+  
+    return (
       <div className="w-100 cart-item d-flex flex-row align-items-center" key={detalle.id}>
-          <img
-              width={50}
-              height={50}
-              src={`${detalle.articulo.imagen.url}`}
-              alt={detalle.articulo.denominacion}
-          />
-          <div className={"w-100 text-left"}>
-              <div>
-                  <b className={"text-truncate"}>
-                      {detalle.articulo.denominacion}
-                  </b>
-              </div>
-              <div>
-                  ${detalle.articulo.precioVenta}
-              </div>
-              <div>
-                  <b>
-                      {detalle.cantidad} {detalle.cantidad === 1 ? "unidad" : "unidades"}{" "}
-                  </b>
-              </div>
-              <hr/>
-          </div>
+        <img
+            width={50}
+            height={50}
+            src={`${detalle.articulo.imagen.url}`}
+            alt={detalle.articulo.denominacion}
+        />
+        <div className={"w-100 text-left"}>
+            <div>
+                <b className={"text-truncate"}>
+                    {detalle.articulo.denominacion}
+                </b>
+            </div>
+            <div>
+                ${detalle.articulo.precioVenta}
+            </div>
+            <div>
+                <b>
+                    {detalle.cantidad} {detalle.cantidad === 1 ? "unidad" : "unidades"}{" "}
+                </b>
+            </div>
+            <hr/>
+        </div>
       </div>
-  );
-}
+    );
+  }
 
-export const Carrito = () => {
+export const Carrito = ({ insumos, productos }: { insumos: IArticuloInsumo[], productos: IArticuloManufacturado[] }) => {
     const {cart, limpiarCarrito, crearPedidoDetalle} = useCarrito();
     const [idPedido, setIdPedido] = useState<number | undefined>();
     const totalProductos = cart.reduce((total, detalle) => total + detalle.articulo.precioVenta * detalle.cantidad, 0);
@@ -83,6 +170,8 @@ export const Carrito = () => {
             <>
             {cart.map((detalle, index) => (
                 <CartItem
+                    insumos={insumos}
+                    productos={productos}
                     detalle={detalle}
                     key={index}
                 />

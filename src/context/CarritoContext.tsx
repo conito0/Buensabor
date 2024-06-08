@@ -54,7 +54,8 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
     fetchSucursalData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sucursalId]); // Dependencia actualizada
-
+  
+  
   const addCarrito = (product: ArticuloDto) => {
     setCart(JSON.parse(localStorage.getItem('cart')|| '[]'))
 
