@@ -42,8 +42,8 @@ const Producto = () => {
     }
 
     // Definir los rangos horarios
-    const horarioLunesADomingo = estaDentroRango(20, 0, 12, 0);
-    const horarioSabadoDomingo = estaDentroRango(11, 0, 15, 0);
+    const horarioLunesADomingo = estaDentroRango(0, 0, 23, 59);
+    const horarioSabadoDomingo = estaDentroRango(0, 0, 23, 59);
 
     // Verificar si es fin de semana
     const esFinDeSemana = (diaSemana === 6) || (diaSemana === 0);
@@ -143,7 +143,7 @@ const Producto = () => {
           <div className="row">
             <CarritoContextProvider>
               <div className="col-md-9">
-              <select className="w-100 form-control custom-select" onChange={handleCategoryFilter}>
+              <select className="w-100 form-control custom-select mt-3" onChange={handleCategoryFilter}>
                 <option value="">Todas las categorías</option>
                 {categorias.map((categoria) => (
                   <option key={categoria.id} value={categoria.id}>
