@@ -8,6 +8,7 @@ import { ListaArticulosInsumo } from '../components/screens/ArticuloInsumo/Artic
 import { ListaProductos } from '../components/screens/Productos/ListaProductos.tsx';
 import Categoria from '../components/screens/Categoria/Categoria.tsx';
 import { ListaPedidos } from '../components/screens/Pedidos/ListaPedidos.tsx';
+import {Registro} from "../components/screens/Registro/Registro.tsx";
 
 
 const AppRouter = () => {
@@ -16,6 +17,7 @@ const AppRouter = () => {
       <Route path="/" element={<><BaseNavBar /> <ListaEmpresa /></>} />
       <Route path="/inicio/:sucursalId" element={<><BaseNavBar /><Inicio /></>} /> 
       <Route path="/sucursal/:empresaId" element={<><BaseNavBar /><ListaSucursal /></>} />
+      <Route path="/registro" element={<><BaseNavBar /><Registro /></>} />
       <Route path="/carrito/:sucursalId" element={<Producto />} />
       <Route path="/productos/:sucursalId" element={<><Producto /></>} /> 
       <Route path="/categorias/:sucursalId" element={<><BaseNavBar /><Categoria /></>} /> 
