@@ -4,6 +4,8 @@ import './ItemProducto.css';
 import ArticuloDto from '../../../types/dto/ArticuloDto';
 import { BiMinus, BiPlus } from "react-icons/bi";
 import { BsCartDash, BsCartPlusFill } from "react-icons/bs";
+import IArticuloInsumo from "../../../types/ArticuloInsumoType";
+import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
 
 type ProductoParams = {
   id: number;
@@ -13,7 +15,10 @@ type ProductoParams = {
   descripcion: string;
   tiempoEstimadoMinutos: number;
   productoObject: ArticuloDto;
+  insumos: IArticuloInsumo[];
+  productos: IArticuloManufacturado[];
 }
+
 
 function ItemProducto(args: ProductoParams) {
   const { addCarrito, removeCarrito, removeItemCarrito, cart } = useCarrito();
@@ -61,14 +66,14 @@ function ItemProducto(args: ProductoParams) {
               onClick={() => {
                 isItemInCart
                   ? removeCarrito(args.productoObject)
-                  : addCarrito(args.productoObject);
+                  : addCarrito(args.productoObject, args.insumos, args.productos);
               }}
             >
               {isItemInCart ? <BsCartDash size={20} /> : <BsCartPlusFill size={20} />} {/* Iconos de carrito */}
             </button>
             <button
               className='btn btn-outline-primary me-2'
-              onClick={() => addCarrito(args.productoObject)}
+              onClick={() => addCarrito(args.productoObject, args.insumos, args.productos)}
             >
               <BiPlus size={20} /> {/* Icono más */}
             </button>

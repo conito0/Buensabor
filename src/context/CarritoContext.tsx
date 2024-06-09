@@ -8,10 +8,18 @@ import Pedido from "../types/Pedido";
 import { useParams } from "react-router-dom";
 import SucursalShortDtoService from "../services/dtos/SucursalShortDtoService";
 import SucursalShorDto from "../types/dto/SucursalShortDto";
+import ArticuloManufacturadoService from "../services/ArticuloManufacturadoService";
+import ArticuloInsumoService from "../services/ArticuloInsumoService";
+import IArticuloInsumo from "../types/ArticuloInsumoType";
+import IArticuloManufacturado from "../types/ArticuloManufacturado";
 
 interface CartContextType {
   cart: DetallePedido[];
-  addCarrito: (product: ArticuloDto) => void;
+  addCarrito: (
+    product: ArticuloDto,
+    insumos: IArticuloInsumo[],
+    productos: IArticuloManufacturado[]
+  ) => void;
   removeCarrito: (product: ArticuloDto) => void;
   removeItemCarrito: (product: ArticuloDto) => void;
   limpiarCarrito: () => void;
@@ -19,7 +27,7 @@ interface CartContextType {
 }
 
 export const CartContext = createContext<CartContextType>({
-  cart: JSON.parse(localStorage.getItem('cart') || '[]') || [],
+  cart: JSON.parse(localStorage.getItem("cart") || "[]") || [],
   addCarrito: () => {},
   removeCarrito: () => {},
   removeItemCarrito: () => {},
@@ -28,7 +36,9 @@ export const CartContext = createContext<CartContextType>({
 });
 
 export function CarritoContextProvider({ children }: { children: ReactNode }) {
-  const [cart, setCart] = useState<DetallePedido[]>(JSON.parse(localStorage.getItem('cart')|| '[]'));
+  const [cart, setCart] = useState<DetallePedido[]>(
+    JSON.parse(localStorage.getItem("cart") || "[]")
+  );
   // const pedidoDetalleService = new DetallePedidoService();
   const pedidoService = new PedidoService();
   const url = import.meta.env.VITE_API_URL;
@@ -54,47 +64,197 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
     fetchSucursalData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sucursalId]); // Dependencia actualizada
-  
-  
-  const addCarrito = (product: ArticuloDto) => {
-    setCart(JSON.parse(localStorage.getItem('cart')|| '[]'))
 
-    // lógica para agregar un producto al carrito
-    const existe = cart.some((detalle) => detalle.articulo.id === product.id);
+  // TRUE si no son suficientes, si son suficientes devuelve FALSE
+  const verificarStockInsuficiente = async (
+    detalle: DetallePedido,
+    insumos: IArticuloInsumo[],
+    productos: IArticuloManufacturado[]
+  ) => {
+    const productoService = new ArticuloManufacturadoService();
+    const articuloInsumoService = new ArticuloInsumoService();
+    const url = import.meta.env.VITE_API_URL;
+    const idArticulo = detalle.articulo.id.toString();
 
-    console.log(existe);
+    try {
+      let stockInsuficiente = false;
+
+      // Verificar si el artículo existe en los artículos insumos
+      const encontradoEnInsumos = insumos.find(
+        (insumo) => insumo.id === detalle.articulo.id
+      );
+      if (encontradoEnInsumos) {
+        const insumoId = detalle.articulo.id;
+        const cantidad = detalle.cantidad;
+
+        const insumData = await articuloInsumoService.descontarStock(
+          url + `articuloInsumo/descontarStock`,
+          insumoId,
+          cantidad
+        );
+
+        if (insumData <= encontradoEnInsumos.stockMinimo) {
+          stockInsuficiente = true;
+        }
+      } else {
+        // Si no se encuentra en los insumos, buscar en los artículos manufacturados
+        const encontradoEnManufacturados = productos.some(
+          (manufacturado) => manufacturado.id === detalle.articulo.id
+        );
+
+        if (encontradoEnManufacturados) {
+          const productData = await productoService.get(
+            url + "articuloManufacturado",
+            idArticulo
+          );
+          // Iterar sobre cada detalle de articuloManufacturadoDetalles
+          for (const detalleProducto of productData.articuloManufacturadoDetalles) {
+            // Verificar si el detalle tiene un atributo 'articuloInsumo'
+            if (detalleProducto.articuloInsumo) {
+              const stockMinimo = detalleProducto.articuloInsumo.stockMinimo;
+              const insumoId = detalleProducto.articuloInsumo.id;
+              const cantidadProduct =
+                detalleProducto.cantidad * detalle.cantidad;
+
+              const insumData = await articuloInsumoService.descontarStock(
+                url + `articuloInsumo/descontarStock`,
+                insumoId,
+                cantidadProduct
+              );
+
+              if (insumData <= stockMinimo) {
+                stockInsuficiente = true;
+                break; // Si encontramos un stock insuficiente, no es necesario seguir iterando
+              }
+            }
+          }
+        }
+      }
+
+      return stockInsuficiente;
+    } catch (error) {
+      console.error("Error al verificar el stock:", error);
+      return true; // Si hay un error, consideramos que hay stock insuficiente
+    }
+  };
+  const addCarrito = async (
+    product: ArticuloDto,
+    insumos: IArticuloInsumo[],
+    productos: IArticuloManufacturado[]
+  ) => {
+    // Sincronizar el carrito desde el localStorage
+    const currentCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCart(currentCart);
+
+    // Verificar si el producto ya existe en el carrito
+    const existe = currentCart.some(
+      (detalle: any) => detalle.articulo.id === product.id
+    );
+    // console.log("Existe en carrito: ", existe);
 
     if (existe) {
-      const cartClonado = cart.map((detalle) =>
+      // Crear un clon del carrito con la cantidad incrementada
+      const cartClonado = currentCart.map((detalle: any) =>
         detalle.articulo.id === product.id
           ? { ...detalle, cantidad: detalle.cantidad + 1 }
           : detalle
       );
-      setCart(cartClonado);
 
-      localStorage.setItem('cart', JSON.stringify(cartClonado));
+      // Verificar el stock de cada detalle en el carrito clonado
+      const verificacionStock = await Promise.all(
+        cartClonado.map(async (detalle: any) => {
+          // console.log(detalle);
+          const tieneStockSuficiente = await verificarStockInsuficiente(
+            detalle,
+            insumos,
+            productos
+          );
+          // console.log(tieneStockSuficiente);
+          return {
+            ...detalle,
+            tieneStockSuficiente,
+          };
+        })
+      );
+
+      // Verificar si todos los detalles tienen suficiente stock
+      const todosTienenStock = verificacionStock.every(
+        (detalle) => !detalle.tieneStockSuficiente
+      );
+
+      if (todosTienenStock) {
+        // Actualizar el estado del carrito y el localStorage
+        setCart(cartClonado);
+        localStorage.setItem("cart", JSON.stringify(cartClonado));
+        // console.log(
+        //   "Stock suficiente para todos los productos. Carrito actualizado.",
+        //   cartClonado
+        // );
+      } else {
+        alert("El producto se encuentra sin stock");
+        // console.log(
+        //   "No hay suficiente stock para todos los productos. Carrito no actualizado.",
+        //   verificacionStock
+        // );
+      }
     } else {
+      // Crear un nuevo detalle para agregar al carrito
       const nuevoDetalle: DetallePedido = {
-        id: cart.length + 1,
+        id: currentCart.length + 1,
         eliminado: false,
         cantidad: 1,
         subTotal: product.precioVenta,
         articulo: product,
       };
-      nuevoDetalle.subTotal = nuevoDetalle.articulo.precioVenta * nuevoDetalle.cantidad;
 
-      const oldCart = cart;
+      nuevoDetalle.subTotal =
+        nuevoDetalle.articulo.precioVenta * nuevoDetalle.cantidad;
 
-      const newCart = [...oldCart, nuevoDetalle];
+      // Agregar el nuevo detalle al carrito
+      const newCart = [...currentCart, nuevoDetalle];
 
-      setCart(newCart);
+      // Verificar el stock de cada detalle en el nuevo carrito
+      const verificacionStock = await Promise.all(
+        newCart.map(async (detalle) => {
+          // console.log(detalle);
+          const tieneStockSuficiente = await verificarStockInsuficiente(
+            detalle,
+            insumos,
+            productos
+          );
+          // console.log(tieneStockSuficiente);
+          return {
+            ...detalle,
+            tieneStockSuficiente,
+          };
+        })
+      );
 
-      localStorage.setItem('cart', JSON.stringify(newCart));
+      // Verificar si todos los detalles tienen suficiente stock
+      const todosTienenStock = verificacionStock.every(
+        (detalle) => !detalle.tieneStockSuficiente
+      );
+
+      if (todosTienenStock) {
+        // Actualizar el estado del carrito y el localStorage
+        setCart(newCart);
+        localStorage.setItem("cart", JSON.stringify(newCart));
+        // console.log(
+        //   "Stock suficiente para todos los productos. Carrito actualizado.",
+        //   newCart
+        // );
+      } else {
+        alert("El producto se encuentra sin stock");
+        // console.log(
+        //   "No hay suficiente stock para todos los productos. Carrito no actualizado.",
+        //   verificacionStock
+        // );
+      }
     }
   };
 
   const removeItemCarrito = (product: ArticuloDto) => {
-    setCart(JSON.parse(localStorage.getItem('cart')|| '[]'))
+    setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
 
     // lógica para eliminar un producto del carrito
     const existe = cart.some((detalle) => detalle.articulo.id === product.id);
@@ -108,25 +268,25 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
         .filter((detalle) => detalle.cantidad > 0);
       setCart(cartClonado);
 
-      localStorage.setItem('cart', JSON.stringify(cartClonado));
+      localStorage.setItem("cart", JSON.stringify(cartClonado));
     }
   };
 
   const removeCarrito = (product: ArticuloDto) => {
-    setCart(JSON.parse(localStorage.getItem('cart')|| '[]'))
+    setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
 
     // lógica para eliminar un producto completamente del carrito
     setCart((prevCart) =>
       prevCart.filter((detalle) => detalle.articulo.id !== product.id)
     );
 
-    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem("cart", JSON.stringify(cart));
   };
 
   const limpiarCarrito = () => {
     // lógica para limpiar todo el carrito
     setCart([]);
-    localStorage.setItem('cart', JSON.stringify([]));
+    localStorage.setItem("cart", JSON.stringify([]));
   };
 
   const crearPedidoDetalle = async (): Promise<number> => {
@@ -136,56 +296,67 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
         const pedidoDetalle = new DetallePedido();
         pedidoDetalle.articulo = detalle.articulo;
         pedidoDetalle.cantidad = detalle.cantidad;
-        pedidoDetalle.subTotal = detalle.articulo.precioVenta * detalle.cantidad;
+        pedidoDetalle.subTotal =
+          detalle.articulo.precioVenta * detalle.cantidad;
         return pedidoDetalle;
       });
-      console.log(cart);
-      console.log(detallesConPedido);
+      // console.log(cart);
+      // console.log(detallesConPedido);
 
       // Filtra los detalles del carrito cuyo tiempo estimado no sea 0
-      const detallesConTiempo = cart.filter(detalle => detalle.articulo.tiempoEstimadoMinutos !== 0);
-      
+      const detallesConTiempo = cart.filter(
+        (detalle) => detalle.articulo.tiempoEstimadoMinutos !== 0
+      );
+
       // Calcula la suma de los tiempos estimados de los detalles filtrados
       const sumaTiempos = detallesConTiempo.reduce(
-        (total, detalle) => total + detalle.articulo.tiempoEstimadoMinutos * detalle.cantidad,
+        (total, detalle) =>
+          total + detalle.articulo.tiempoEstimadoMinutos * detalle.cantidad,
         0
       );
-      
+
       // Obtén la fecha y hora actual
       const fechaActual = new Date();
-      
+
       // Calcula la hora estimada de finalización
       const horaActual = fechaActual.getHours();
       const minutosActuales = fechaActual.getMinutes();
       const totalMinutos = minutosActuales + sumaTiempos;
-      
+
       // Calcula las horas y minutos totales
       const horasAdicionales = Math.floor(totalMinutos / 60);
       const minutosEstimados = totalMinutos % 60;
       const horaEstimada = (horaActual + horasAdicionales) % 24;
-      
+
       // Formatea la hora y los minutos
-      const horaEstimadaFormateada = String(horaEstimada).padStart(2, '0');
-      const minutosEstimadosFormateados = String(minutosEstimados).padStart(2, '0');
-      
+      const horaEstimadaFormateada = String(horaEstimada).padStart(2, "0");
+      const minutosEstimadosFormateados = String(minutosEstimados).padStart(
+        2,
+        "0"
+      );
+
       // Resultado final
       const tiempoEstimado = `${horaEstimadaFormateada}:${minutosEstimadosFormateados}`;
-      console.log(`Hora estimada de finalización: ${tiempoEstimado}`);
-      
+      // console.log(`Hora estimada de finalización: ${tiempoEstimado}`);
+
       // Crea el objeto Pedido
       const nuevoPedido = new Pedido();
       nuevoPedido.fechaPedido = fechaActual;
-      nuevoPedido.total = cart.reduce((total, detalle) => total + detalle.articulo.precioVenta * detalle.cantidad, 0);
+      nuevoPedido.total = cart.reduce(
+        (total, detalle) =>
+          total + detalle.articulo.precioVenta * detalle.cantidad,
+        0
+      );
       nuevoPedido.detallePedidos = detallesConPedido;
       nuevoPedido.horaEstimadaFinalizacion = `${tiempoEstimado}`;
       if (sucursal) {
         nuevoPedido.sucursal = sucursal;
       } else {
-        console.error('La sucursal no está definida');
+        console.error("La sucursal no está definida");
       }
 
       // Guardar el pedido en el backend
-      console.log(nuevoPedido);
+      // console.log(nuevoPedido);
       const respuestaPedido = await pedidoService.post(
         url + "pedido",
         nuevoPedido
