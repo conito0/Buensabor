@@ -1,11 +1,13 @@
 
 import {useAuth0} from "@auth0/auth0-react";
+import {useNavigate} from "react-router-dom";
 
 export const BaseNavBar = () => {
 
-  const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  const { user, isAuthenticated, logout } = useAuth0();
+  const navigate = useNavigate();
   const handleLogin = () => {
-    loginWithRedirect();
+    navigate('/registro')
   }
 
   const handleLogout = () => {
@@ -84,8 +86,8 @@ export const BaseNavBar = () => {
         </div>
         <form className="d-flex align-items-center text-white" role="search">
           { isAuthenticated ? <div className={"px-2"}><img alt={"Imagen de perfil"} className={"rounded-4"} height={20} width={20} src={user?.picture}/><span> {user?.name}</span></div> : <></> }
-          <button hidden={isAuthenticated} onClick={handleLogin} type="button" className={"btn btn-secondary"}>Login</button>
-          <button hidden={!isAuthenticated}  onClick={handleLogout} type="button" className={"btn btn-secondary"}>Logout</button>
+          <button hidden={isAuthenticated} onClick={handleLogin} type="button" className={"btn btn-light"}>Registro / Login</button>
+          <button hidden={!isAuthenticated}  onClick={handleLogout} type="button" className={"btn btn-light"}>Logout</button>
         </form>
       </div>
     </nav>
