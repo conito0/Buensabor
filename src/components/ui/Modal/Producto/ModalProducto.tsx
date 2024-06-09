@@ -23,6 +23,7 @@ import ArticuloManufacturadoDetalleService from "../../../../services/ArticuloMa
 import { useParams } from "react-router-dom";
 import IArticuloInsumo from "../../../../types/ArticuloInsumoType.ts";
 import ArticuloInsumoService from "../../../../services/ArticuloInsumoService.ts";
+import ImagenArticulo from "../../../../types/ImagenArticulo.ts";
 
 interface ModalProductProps {
   getProducts: () => void;
@@ -60,8 +61,16 @@ const ModalProducto: React.FC<ModalProductProps> = ({
     eliminado: productToEdit ? productToEdit.eliminado : false,
     denominacion: productToEdit?.denominacion || "",
     precioVenta: productToEdit?.precioVenta || 0,
-    imagenes: productToEdit?.imagenes?.map((imagen: any) => imagen.denominacion) || [],
-    unidadMedida: productToEdit?.unidadMedida
+    imagenes: productToEdit
+    ? productToEdit.imagenes?.map(
+        (imagen: any) =>
+          ({
+            url: imagen.url,
+            eliminado: false,
+            name: imagen.name,
+          } as ImagenArticulo)
+      )
+    : [],    unidadMedida: productToEdit?.unidadMedida
       ? { ...productToEdit.unidadMedida }
       : {
           id: 0,
@@ -280,6 +289,8 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                 );
 
                 values.articuloManufacturadoDetalles = respuestas;
+                console.log(values.imagenes[0].url)
+                console.log(values);
 
                 // Actualizar el producto después de manejar los detalles
                 await productoService.put(
@@ -328,14 +339,14 @@ const ModalProducto: React.FC<ModalProductProps> = ({
 
               console.log(file, productoId);
 
-              if (file && productoId) {
-                const response = await productoService.uploadFile(
-                  url + "articuloManufacturado/uploads",
-                  file,
-                  productoId
-                );
-                console.log("Upload successful:", response);
-              }
+              // if (file && productoId) {
+              //   const response = await productoService.uploadFile(
+              //     url + "articuloManufacturado/uploads",
+              //     file,
+              //     productoId
+              //   );
+              //   console.log("Upload successful:", response);
+              // }
 
               getProducts();
               handleClose();
@@ -484,7 +495,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     component="div"
                   />
 
-                  <label htmlFor="imagen">Imagen:</label>
+                  <label htmlFor="imagenes">Imágenes:</label>
                   <input
                     name="imagen"
                     type="file"
@@ -500,7 +511,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     }}
                     className="form-control my-2"
                   />
-
                   <ErrorMessage
                     name="imagen"
                     className="error-message"
