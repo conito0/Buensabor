@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useCarrito } from "../../../hooks/useHooks";
 import DetallePedido from "../../../types/DetallePedido";
 import "./Carrito.css";
-import { User, useAuth0 } from "@auth0/auth0-react";
+import { useAuth0 } from "@auth0/auth0-react";
 import CheckoutMP from "../../screens/CheckoutMP/CheckoutMP";
 
 interface CartItemProps {
