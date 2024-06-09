@@ -2,21 +2,19 @@ import { useState } from "react";
 import { Wallet, initMercadoPago } from "@mercadopago/sdk-react";
 import PedidoService from "../../../services/PedidoService";
 import PreferenceMPService from "../../../services/mercadoPago/PreferenceMPService";
+import { useAuth0 } from "@auth0/auth0-react";
 
 function CheckoutMP({ idPedido = 0 }) {
   const [idPreference, setIdPreference] = useState<string>('');
-  const [fechaCreacion, setFechaCreacion] = useState<Date>(new Date());
-  const [fechaExpiracion, setFechaExpiracion] = useState<Date>(new Date());
-  const [total, setTotal] = useState<number>(0);
-  const [payerEmail, setPayerEmail] = useState<string>('');
-  const [payerName, setPayerName] = useState<string>('');
-  const [payerSurname, setPayerSurname] = useState<string>('');
-  const [paymentMethods, setPaymentMethods] = useState<string>('');
   const preferenceMPService = new PreferenceMPService();
   const [mostrarPagoMP, setMostrarPagoMP] = useState(false); 
   const pedidoService = new PedidoService();
   const url = import.meta.env.VITE_API_URL;
+  const { isAuthenticated, user } = useAuth0();
 
+ if (isAuthenticated && user) { // Verificamos si el usuario está autenticado y si hay datos de usuario
+    //BUSCAR EL CLIENTE CON EL EMAIL
+  }
   const getPreferenceMP = async () => {
     console.log(idPedido)
     if (idPedido != 0 || idPedido != null || idPedido != undefined) {
@@ -27,12 +25,8 @@ function CheckoutMP({ idPedido = 0 }) {
         if (response && response.id) {
           console.log("Preference id: " + response.id);
           setIdPreference(response.id);
-          setFechaCreacion(response.fechaCreacion);
-          setFechaExpiracion(response.fechaExpiracion);
-          setPayerEmail(response.payerEmail);
-          setPayerName(response.payerName);
-          setPayerSurname(response.payerSurname);
-          setPaymentMethods(response.paymentMethods);
+        //   setPayerEmail(payerEmail);
+        //   setPayerName(payerName);
           setMostrarPagoMP(true); 
         } else {
           console.error('Error: La respuesta de la API no contiene un ID de preferencia.');

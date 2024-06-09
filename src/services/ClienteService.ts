@@ -1,18 +1,17 @@
-import BackendClient from "./BackendClient.ts";
-import {Cliente} from "../types/Cliente.ts";
+import Cliente from "../types/Cliente";
+import BackendClient from "./BackendClient";
 
 export default class ClientService extends BackendClient<Cliente> {
-
-    public async getByEmail(path: string, options: RequestInit): Promise<Cliente | undefined> {
+    public async getByEmail(baseUrl: string, email: string): Promise<Cliente | undefined> {
         try {
-            const response = await fetch(path, options);
+            const response = await fetch(`${baseUrl}/email/${email}`);
             if (!response.ok) {
                 throw new Error(response.statusText);
             }
             return response.json();
         } catch (error) {
-            return undefined
+            console.error("Error fetching client by email:", error);
+            return undefined;
         }
     }
-
 }

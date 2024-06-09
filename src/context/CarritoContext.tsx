@@ -12,6 +12,9 @@ import ArticuloManufacturadoService from "../services/ArticuloManufacturadoServi
 import ArticuloInsumoService from "../services/ArticuloInsumoService";
 import IArticuloInsumo from "../types/ArticuloInsumoType";
 import IArticuloManufacturado from "../types/ArticuloManufacturado";
+import { useAuth0 } from "@auth0/auth0-react";
+import ClientService from "../services/ClienteService";
+import Cliente from "../types/Cliente";
 
 interface CartContextType {
   cart: DetallePedido[];
@@ -45,6 +48,9 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
   const { sucursalId } = useParams();
   const sucursalService = new SucursalShortDtoService();
   const [sucursal, setSucursal] = useState<SucursalShorDto>(); // Inicialización del estado
+  const { isAuthenticated, user } = useAuth0();
+  const clienteService = new ClientService();
+  const [client, setClient] = useState<Cliente | null>(null);
 
   const fetchSucursalData = async () => {
     try {
@@ -354,8 +360,21 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       } else {
         console.error("La sucursal no está definida");
       }
+        if (isAuthenticated && user && user.email) {
+          try {
+            const cliente = await clienteService.getByEmail(url + "cliente", user.email);
+            setClient(cliente ?? null);
+            console.log(cliente)
+          } catch (error) {
+            setClient(null);
+          }
+        }
 
-      // Guardar el pedido en el backend
+      if(client){
+        nuevoPedido.cliente = client;
+      }
+      console.log(nuevoPedido)
+      // Guardar el pedido en el backend  
       // console.log(nuevoPedido);
       const respuestaPedido = await pedidoService.post(
         url + "pedido",

@@ -1,3 +1,4 @@
+import Cliente from "./Cliente";
 import DetallePedido from "./DetallePedido";
 import SucursalShorDto from "./dto/SucursalShortDto";
 import { Estado } from "./enums/Estado";
@@ -16,7 +17,9 @@ export default class Pedido {
   fechaPedido: Date = new Date();
   detallePedidos: DetallePedido[] = [];
   sucursal: SucursalShorDto;
+  cliente: Cliente;
   constructor() {
     this.sucursal = new SucursalShorDto(); // Inicializar la propiedad categoria en el constructor
+    this.cliente = new Cliente();
   }
 }

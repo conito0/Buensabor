@@ -80,7 +80,8 @@ export const ListaPedidos = () => {
       formaPago: rowData.FormaPago,
       fechaPedido: rowData.fechaPedido,
       detallePedidos: rowData.detallePedidos,
-      sucursal: rowData.sucursal
+      sucursal: rowData.sucursal,
+      cliente: rowData.cliente
     });
     
     setDeleteModalOpen(true);
@@ -122,7 +123,8 @@ export const ListaPedidos = () => {
       formaPago: rowData.formaPago,
       fechaPedido: rowData.fechaPedido,
       detallePedidos: rowData.detallePedidos,
-      sucursal: rowData.sucursal
+      sucursal: rowData.sucursal,
+      cliente: rowData.cliente
     });
     dispatch(toggleModal({ modalName: 'modal' }));
   };
