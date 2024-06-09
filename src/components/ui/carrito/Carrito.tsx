@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useCarrito } from "../../../hooks/useHooks";
 import DetallePedido from "../../../types/DetallePedido";
 import "./Carrito.css";
-import { useAuth0 } from "@auth0/auth0-react";
+import { User, useAuth0 } from "@auth0/auth0-react";
+import CheckoutMP from "../../screens/CheckoutMP/CheckoutMP";
 
 interface CartItemProps {
   detalle: DetallePedido;
@@ -51,28 +52,45 @@ export const Carrito = () => {
     0
   );
 
+  // const handleGenerarPedido = async () => {
+  //   try {
+  //     const nuevoIdPedido = await crearPedidoDetalle();
+  //     // console.log(nuevoIdPedido);
+  //     setIdPedido(nuevoIdPedido);
+  //     setPedidoCreado(true);
+  //     setTimeout(() => {
+  //       limpiarCarrito();
+  //       setIdPedido(undefined);
+  //       setPedidoCreado(false);
+  //     }, 3000); // Espera de 1 segundo antes de limpiar el carrito
+  //   } catch (error) {
+  //     console.error("Error al generar el pedido:", error);
+  //   }
+  // };
   const handleGenerarPedido = async () => {
     try {
       const nuevoIdPedido = await crearPedidoDetalle();
-      // console.log(nuevoIdPedido);
       setIdPedido(nuevoIdPedido);
-      setPedidoCreado(true);
-      setTimeout(() => {
-        limpiarCarrito();
-        setIdPedido(undefined);
-        setPedidoCreado(false);
-      }, 3000); // Espera de 1 segundo antes de limpiar el carrito
+      setPedidoCreado(true)
     } catch (error) {
-      console.error("Error al generar el pedido:", error);
+      console.error('Error al generar el pedido:', error);
     }
   };
-
   const limpiarCarritoYResetearIdPedido = () => {
     limpiarCarrito();
     setIdPedido(undefined); // Restablecer idPedido a undefined cuando se limpie el carrito
     setPedidoCreado(false);
   };
 
+  // if (isAuthenticated && user) { // Verificamos si el usuario está autenticado y si hay datos de usuario
+
+  //   return (
+  //     <div>
+  //       <h2>Bienvenido, {user.name}!</h2>
+  //       <p>Email: {user.email}</p>
+  //     </div>
+  //   );
+  // }
   return (
     <div className="text-center">
       <label className="cart-button">
@@ -137,6 +155,7 @@ export const Carrito = () => {
                 </button>
               </>
             )}
+            {idPedido && <CheckoutMP idPedido={idPedido} />}
 
             {pedidoCreado && idPedido !== undefined && (
               <div className="text-success">

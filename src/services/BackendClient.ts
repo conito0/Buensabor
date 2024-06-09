@@ -1,4 +1,6 @@
 // Importación de la clase abstracta AbstractBackendClient
+import Pedido from "../types/Pedido";
+import PreferenceMP from "../types/mercadoPago/PreferenceMP";
 import { AbstractBackendClient } from "./AbstractBackendClient";
 
 // Clase abstracta que proporciona métodos genéricos para interactuar con una API
@@ -137,5 +139,28 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
       throw new Error("Error al procesar la respuesta: " + error);
     }
   }
-  
+  // mercado pago
+  async createPreferenceMP(pedido: Pedido): Promise<PreferenceMP> {
+    const urlServer = "http://localhost:8080/mercado_pago/create_preference";
+    try {
+      const response = await fetch(urlServer, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(pedido),
+      });
+      if (!response.ok) {
+        throw new Error(
+          `Error al crear preferencia de Mercado Pago: ${response.statusText}`
+        );
+      }
+      const responseData = await response.json();
+      console.log("Respuesta de la API:", responseData);
+      return responseData as PreferenceMP;
+    } catch (error) {
+      console.error("Error en createPreferenceMP:", error);
+      throw error;
+    }
+  }
 }
