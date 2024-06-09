@@ -18,58 +18,6 @@ import { Button } from "react-bootstrap";
 import DeliveryModal from "../../ui/Modal/Delivery/Delivery";
 import { TipoEnvio } from "../../../types/enums/TipoEnvio";
 
-// TRUE si no son suficientes, si son suficientes devuelve FALSE
-const verificarStockInsuficiente = async (detalle: DetallePedido, insumos: IArticuloInsumo[], productos: IArticuloManufacturado[]) => {
-  const productoService = new ArticuloManufacturadoService();
-  const articuloInsumoService = new ArticuloInsumoService();
-  const url = import.meta.env.VITE_API_URL;
-  const idArticulo = detalle.articulo.id.toString();
-
-  try {
-      let stockInsuficiente = false;
-
-      // Verificar si el artículo existe en los artículos insumos  
-      const encontradoEnInsumos = insumos.find(insumo => insumo.id === detalle.articulo.id);
-      if (encontradoEnInsumos) {
-          const insumoId = detalle.articulo.id;
-          const cantidad = detalle.cantidad;
-
-          const insumData = await articuloInsumoService.descontarStock(url + `articuloInsumo/descontarStock`, insumoId, cantidad);
-
-          if (insumData < encontradoEnInsumos.stockMinimo) {
-              stockInsuficiente = true;
-          }
-      } else {
-          // Si no se encuentra en los insumos, buscar en los artículos manufacturados
-          const encontradoEnManufacturados = productos.some(manufacturado => manufacturado.id === detalle.articulo.id);
-
-          if (encontradoEnManufacturados) {
-              const productData = await productoService.get(url + 'articuloManufacturado', idArticulo);
-              // Iterar sobre cada detalle de articuloManufacturadoDetalles
-              for (const detalleProducto of productData.articuloManufacturadoDetalles) {
-                  // Verificar si el detalle tiene un atributo 'articuloInsumo'
-                  if (detalleProducto.articuloInsumo) {
-                      const stockMinimo = detalleProducto.articuloInsumo.stockMinimo;
-                      const insumoId = detalleProducto.articuloInsumo.id;
-                      const cantidadProduct = detalleProducto.cantidad * detalle.cantidad;
-
-                      const insumData = await articuloInsumoService.descontarStock(url + `articuloInsumo/descontarStock`, insumoId, cantidadProduct);
-
-                      if(insumData < stockMinimo){
-                          stockInsuficiente = true;
-                          break; // Si encontramos un stock insuficiente, no es necesario seguir iterando
-                      }
-                  }
-              }
-          } 
-      }
-
-      return stockInsuficiente;
-  } catch (error) {
-      console.error("Error al verificar el stock:", error);
-      return true; // Si hay un error, consideramos que hay stock insuficiente
-  }
-};
 const Producto = () => {
   const [productos, setProductos] = useState<ArticuloDto[]>([]);
   const productoService = new ArticuloManufacturadoService();
