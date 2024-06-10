@@ -15,6 +15,9 @@ import IArticuloManufacturado from "../types/ArticuloManufacturado";
 import { useAuth0 } from "@auth0/auth0-react";
 import ClientService from "../services/ClienteService";
 import Cliente from "../types/Cliente";
+import { TipoEnvio } from "../types/enums/TipoEnvio";
+import Domicilio from "../types/Domicilio";
+import { FormaPago } from "../types/enums/FormaPago";
 
 interface CartContextType {
   cart: DetallePedido[];
@@ -26,7 +29,7 @@ interface CartContextType {
   removeCarrito: (product: ArticuloDto) => void;
   removeItemCarrito: (product: ArticuloDto) => void;
   limpiarCarrito: () => void;
-  crearPedidoDetalle: () => Promise<number>;
+  crearPedidoDetalle: (tipoEnvio: TipoEnvio, formaPago : FormaPago, domicilio?: Domicilio) => Promise<number>;
 }
 
 export const CartContext = createContext<CartContextType>({
@@ -51,7 +54,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
   const { isAuthenticated, user } = useAuth0();
   const clienteService = new ClientService();
   const [client, setClient] = useState<Cliente | null>(null);
-
+  console.log(client) // solo para que no de error
   const fetchSucursalData = async () => {
     try {
       if (sucursalId) {
@@ -295,7 +298,8 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("cart", JSON.stringify([]));
   };
 
-  const crearPedidoDetalle = async (): Promise<number> => {
+  const crearPedidoDetalle = async (tipoEnvio: TipoEnvio, formaPago: FormaPago, domicilio?: Domicilio): Promise<number> => {
+    console.log(tipoEnvio)
     try {
       // Crear detalles del pedido y asignarles el pedido
       const detallesConPedido: DetallePedido[] = cart.map((detalle) => {
@@ -331,9 +335,19 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
 
       // Calcula las horas y minutos totales
       const horasAdicionales = Math.floor(totalMinutos / 60);
-      const minutosEstimados = totalMinutos % 60;
-      const horaEstimada = (horaActual + horasAdicionales) % 24;
-
+      // const minutosEstimados = totalMinutos % 60;
+      // const horaEstimada = (horaActual + horasAdicionales) % 24;
+      let minutosEstimados = totalMinutos % 60;
+      let horaEstimada = (horaActual + horasAdicionales) % 24;
+      
+      // Agregar 10 minutos si el tipo de envío es DELIVERY
+      if (tipoEnvio === TipoEnvio.DELIVERY) {
+        minutosEstimados += 10;
+        if (minutosEstimados >= 60) {
+          minutosEstimados -= 60;
+          horaEstimada = (horaEstimada + 1) % 24;
+        }
+      }
       // Formatea la hora y los minutos
       const horaEstimadaFormateada = String(horaEstimada).padStart(2, "0");
       const minutosEstimadosFormateados = String(minutosEstimados).padStart(
@@ -343,16 +357,25 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
 
       // Resultado final
       const tiempoEstimado = `${horaEstimadaFormateada}:${minutosEstimadosFormateados}`;
-      // console.log(`Hora estimada de finalización: ${tiempoEstimado}`);
 
-      // Crea el objeto Pedido
-      const nuevoPedido = new Pedido();
-      nuevoPedido.fechaPedido = fechaActual;
-      nuevoPedido.total = cart.reduce(
+      // console.log(`Hora estimada de finalización: ${tiempoEstimado}`);
+      const total = 0;
+      const subtotal = cart.reduce(
         (total, detalle) =>
           total + detalle.articulo.precioVenta * detalle.cantidad,
         0
       );
+      const totalPedido = tipoEnvio === TipoEnvio.TAKEAWAY ? subtotal * 0.9 : subtotal; // Aplicar un descuento del 10% si es TAKEAWAY
+      console.log('Total con descuento (si aplica):', total);
+
+      // Crea el objeto Pedido
+      const nuevoPedido = new Pedido();
+      nuevoPedido.fechaPedido = fechaActual;
+      nuevoPedido.total = totalPedido;
+
+      console.log('Total con descuento (si aplica):', total);
+
+      console.log('Total con descuento (si aplica):', total);
       nuevoPedido.detallePedidos = detallesConPedido;
       nuevoPedido.horaEstimadaFinalizacion = `${tiempoEstimado}`;
       if (sucursal) {
@@ -360,20 +383,32 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       } else {
         console.error("La sucursal no está definida");
       }
-        if (isAuthenticated && user && user.email) {
-          try {
-            const cliente = await clienteService.getByEmail(url + "cliente", user.email);
-            setClient(cliente ?? null);
-            console.log(cliente)
-          } catch (error) {
-            setClient(null);
-          }
+      if(tipoEnvio == TipoEnvio.DELIVERY){
+        if(domicilio){
+          nuevoPedido.domicilio = domicilio;
         }
-
-      if(client){
-        nuevoPedido.cliente = client;
+        nuevoPedido.formaPago = formaPago;
       }
-      console.log(nuevoPedido)
+      if(tipoEnvio == TipoEnvio.TAKEAWAY){
+        if(domicilio){
+          nuevoPedido.domicilio = undefined;
+        }
+        nuevoPedido.formaPago = formaPago;
+      }
+      if (isAuthenticated && user && user.email) {
+        try {
+          const cliente = await clienteService.getByEmail(url + "cliente", user.email);
+          setClient(cliente ?? null);
+          if(cliente){
+            nuevoPedido.cliente = cliente;
+          }
+          console.log(cliente)
+        } catch (error) {
+          setClient(null);
+        }
+      }
+
+      nuevoPedido.tipoEnvio = tipoEnvio;
       // Guardar el pedido en el backend  
       // console.log(nuevoPedido);
       const respuestaPedido = await pedidoService.post(
