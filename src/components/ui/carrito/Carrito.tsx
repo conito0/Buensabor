@@ -268,7 +268,16 @@ export const Carrito = () => {
     limpiarCarrito();
     setIdPedido(undefined); // Restablecer idPedido a undefined cuando se limpie el carrito
     setPedidoCreado(false);
+    setTipoEnvio(null)
+    setFormaPago(null)
   };
+  useEffect(() => {
+    if (cart.length === 0 && idPedido !== undefined) {
+      limpiarCarritoYResetearIdPedido();
+      console.log("hola")
+    }
+  }, [cart, idPedido]);
+  
   const [showModal, setShowModal] = useState(false); // Estado para controlar la visibilidad de la modal
 
   const handleTipoEnvioChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
