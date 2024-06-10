@@ -143,13 +143,13 @@ const columns = [
     </Button>
   ) },
 ];
-if (!isAuthenticated) {
-  return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-      <h3>Debes loguearte para ver tus pedidos</h3>
-    </div>
-  );
-}
+// if (!isAuthenticated) {
+//   return (
+//     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+//       <h3>Debes loguearte para ver tus pedidos</h3>
+//     </div>
+//   );
+// }
 
   return (
   <React.Fragment>
