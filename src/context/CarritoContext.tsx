@@ -280,16 +280,16 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("cart", JSON.stringify(cartClonado));
     }
   };
-
   const removeCarrito = (product: ArticuloDto) => {
-    setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
-
+    // Obtener el carrito actual del localStorage
+    const currentCart = JSON.parse(localStorage.getItem("cart") || "[]");
+  
     // lógica para eliminar un producto completamente del carrito
-    setCart((prevCart) =>
-      prevCart.filter((detalle) => detalle.articulo.id !== product.id)
-    );
-
-    localStorage.setItem("cart", JSON.stringify(cart));
+    const updatedCart = currentCart.filter((detalle: any) => detalle.articulo.id !== product.id);
+  
+    // Actualizar el estado del carrito y almacenarlo en el localStorage
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   const limpiarCarrito = () => {
