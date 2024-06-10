@@ -42,7 +42,7 @@ const SearchBar: React.FC<Props> = ({ onSearch }) => {
               </IconButton>
             )}
             {/* Botón para activar la búsqueda. */}
-            <IconButton edge="end">
+            <IconButton onClick={() => onSearch(searchQuery)} edge="end">
               <SearchIcon />
             </IconButton>
           </InputAdornment>

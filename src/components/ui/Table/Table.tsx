@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { TablePagination, IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import { TablePagination } from '@mui/material';
 
 interface Row {
   [key: string]: any;
@@ -10,17 +8,15 @@ interface Row {
 interface Column {
   id: keyof Row;
   label: string;
-  renderCell: (rowData: Row) => JSX.Element; 
+  renderCell?: (rowData: Row) => JSX.Element;
 }
 
 interface Props {
   data: Row[];
   columns: Column[];
-  handleOpenEditModal: (rowData: Row) => void;
-  handleOpenDeleteModal: (rowData: Row) => void; // Nueva prop para manejar la apertura de la modal de eliminación
 }
 
-const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, handleOpenDeleteModal }) => {
+const TableComponent: React.FC<Props> = ({ data, columns }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -35,13 +31,12 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
 
   return (
     <div className="table-responsive">
-              <table className="table responsive">
+      <table className="table responsive">
         <thead>
           <tr>
             {columns.map((column) => (
               <th key={column.id}>{column.label}</th>
             ))}
-            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -52,16 +47,6 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
                   {column.renderCell ? column.renderCell(row) : row[column.id]}
                 </td>
               ))}
-              <td>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </div>
-              </td>
             </tr>
           ))}
         </tbody>

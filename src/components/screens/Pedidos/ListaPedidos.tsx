@@ -1,28 +1,20 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, Typography, Container } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
-import { toggleModal } from "../../../redux/slices/Modal";
+import { useAppDispatch } from "../../../hooks/redux";
 import TableComponent from "../../ui/Table/Table.tsx";
-//import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
-//import {handleSearch} from "../../../utils.ts/utils.ts";
 import { CCol, CContainer, CRow } from "@coreui/react";
-import { handleSearch } from "../../../utils.ts/utils.ts";
 import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
 import { useParams } from "react-router-dom";
 import PedidoService from "../../../services/PedidoService.ts";
-import Pedido from "../../../types/Pedido.ts";
 import { setPedido } from "../../../redux/slices/Pedido.ts";
+import { useAuth0 } from "@auth0/auth0-react";
+import ClientService from "../../../services/ClienteService.ts";
+import { Estado } from "../../../types/enums/Estado.ts";
+import { Button } from "react-bootstrap";
 
 interface Row {
   [key: string]: any;
 }
-
-interface Column {
-  id: keyof Row;
-  label: string;
-  renderCell: (rowData: Row) => JSX.Element;
-}
-
 export const ListaPedidos = () => {
 
   const url = import.meta.env.VITE_API_URL;
@@ -30,30 +22,43 @@ export const ListaPedidos = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   const pedidoService = new PedidoService();
   const [filteredData, setFilterData] = useState<Row[]>([]);
-  const [pedidoToEdit, setPedidoToEdit] = useState<Pedido | null>(null);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const {sucursalId} = useParams();
+  const { isAuthenticated, user } = useAuth0();
+  const clienteService = new ClientService();
+  const [clienteId, setClienteId] = useState<number | null>(null);
+  const [noResults, setNoResults] = useState(false);
+  const [originalData, setOriginalData] = useState<Row[]>([]);
 
-  const globalArticuloManufacturado = useAppSelector(
-      (state) => state.articuloManufacturado.data
-  );
+
+  const fetchData = async () => {
+    try {
+      if (isAuthenticated && user && user.email) {
+        const cliente = await clienteService.getByEmail(url + "cliente", user.email);
+        if(cliente){
+          setClienteId(cliente.id);
+        }
+      }
+    } catch (error) {
+      console.log("Cliente no encontrado");
+    }
+  };
   
+  fetchData(); // Llama a la función asíncrona para ejecutar el código.
 
   const fetchPedidos = useCallback(async () => {
     try {
       const pedidos = (await pedidoService.getAll(url + 'pedido')).filter((v) => !v.eliminado);
-      
+      console.log(pedidos)
       // Asegúrate de que sucursalId esté definido y conviértelo a un número
-      if (sucursalId) {
-        const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
-        
+      if (clienteId) {        
         // Filtrar los productos por sucursal y categoría
         const pedidosFiltrados = pedidos.filter(pedido =>
-          pedido.sucursal && // Verificar si categoria está definido
-          pedido.sucursal && pedido.sucursal.id === sucursalIdNumber
+          pedido.cliente && 
+          pedido.cliente && pedido.cliente.id === clienteId
         );
 
         dispatch(setPedido(pedidosFiltrados));
+        console.log(pedidosFiltrados)
         setFilterData(pedidosFiltrados);
       }
     } catch (error) {
@@ -64,120 +69,87 @@ export const ListaPedidos = () => {
   useEffect(() => {
     fetchPedidos();
     onSearch('');
+    setOriginalData(filteredData);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
-  const handleOpenDeleteModal = (rowData: Row) => {
-    setPedidoToEdit({
-      id: rowData.id,
-      eliminado: rowData.eliminado,
-      horaEstimadaFinalizacion: rowData.horaEstimadaFinalizacion,
-      total: rowData.total,
-      totalCosto: rowData.totalCosto,
-      estado: rowData.estado,
-      tipoEnvio: rowData.tipoEnvio,
-      formaPago: rowData.FormaPago,
-      fechaPedido: rowData.fechaPedido,
-      detallePedidos: rowData.detallePedidos,
-      sucursal: rowData.sucursal,
-      cliente: rowData.cliente
-    });
-    
-    setDeleteModalOpen(true);
-  };
-
-  const handleCloseDeleteModal = () => {
-
-    console.log(deleteModalOpen)
-
-    setDeleteModalOpen(false); // Utiliza el estado directamente para cerrar la modal de eliminación
-    fetchPedidos();
-  };
-
-  const handleDelete = async () => {
-    try {
-      if (pedidoToEdit && pedidoToEdit.id) {
-        await pedidoService.delete(url + 'pedido', pedidoToEdit.id.toString());
-        console.log('Se ha eliminado correctamente.');
-        handleCloseDeleteModal(); // Cerrar el modal de eliminación
-        fetchPedidos();
-      } else {
-        console.error('No se puede eliminar el pedido porque no se proporcionó un ID válido.');
-      }
-    } catch (error) {
-      console.error('Error al eliminar el pedido:', error);
-    }
-  };
-
-
-  const handleOpenEditModal = (rowData: Row) => {
-    setPedidoToEdit({
-      id: rowData.id,
-      eliminado: rowData.eliminado,
-      horaEstimadaFinalizacion: rowData.horaEstimadaFinalizacion,
-      total: rowData.total,
-      totalCosto: rowData.totalCosto,
-      estado: rowData.estado,
-      tipoEnvio: rowData.tipoEnvio,
-      formaPago: rowData.formaPago,
-      fechaPedido: rowData.fechaPedido,
-      detallePedidos: rowData.detallePedidos,
-      sucursal: rowData.sucursal,
-      cliente: rowData.cliente
-    });
-    dispatch(toggleModal({ modalName: 'modal' }));
-  };
-
-
-  // Función para manejar la búsqueda de artículos manufacturados
   const onSearch = (query: string) => {
-    handleSearch(query, globalArticuloManufacturado, setFilterData);
-  };
-
-  // Definición de las columnas para la tabla de artículos manufacturados
-  const columns: Column[] = [
-    // { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
-    { id: "horaEstimadaFinalizacion", label: "Hora Estimada Finalizacion", renderCell: (rowData) => <>{rowData.horaEstimadaFinalizacion}</> },
-    { id: "total", label: "Total", renderCell: (rowData) => <>{rowData.total}</> },
-    { id: "totalCosto", label: "Total Costo", renderCell: (rowData) => <>{rowData.totalCosto}</> },
-    { id: "estado", label: "Estado", renderCell: (rowData) => <>{rowData.estado}</> },
-    { id: "tipoEnvio", label: "Tipo Envio", renderCell: (rowData) => <>{rowData.tipoEnvio}</> },
-    { id: "formaPago", label: "Forma Pago", renderCell: (rowData) => <>{rowData.formaPago}</> },
-    { id: "fechaPedido", label: "Fecha Pedido", renderCell: (rowData) => <>{rowData.fechaPedido}</> },
-    {
-      id: "detallePedidos",
-      label: "Detalle del Pedido",
-      renderCell: (rowData) => {
-        const detalles = rowData.detallePedidos;
-        return (
-          <div>
-            {detalles.map((detalle: any, index: number) => (
-              <div key={index}>
-                <p>Cantidad: {detalle.cantidad}</p>
-                {/* Renderiza más atributos relevantes del detalle aquí */}
-                <p>Artículo: {detalle.articulo.denominacion}</p>
-                {/* Si hay más atributos anidados, puedes seguir accediendo a ellos de manera similar */}
-                {/* Por ejemplo, detalle.articulo.precioVenta, detalle.articulo.imagenes, etc. */}
-              </div>
-            ))}
-          </div>
-        );
-      }
+    // Verificamos si el campo de búsqueda está vacío o no
+    const isQueryEmpty = query.trim() === "";
+    console.log(isQueryEmpty)
+    // Si el campo de búsqueda está vacío o es "falsy", mostramos todos los resultados sin filtrar
+    if (isQueryEmpty) {
+      setFilterData(originalData);
+      return;
     }
-    
-  ];
-  if (filteredData.length === 0) {
-    return (
-        <>
-          <div style={{height: "calc(100vh - 56px)"}} className={"d-flex flex-column justify-content-center align-items-center w-100"}>
-            <div className="spinner-border" role="status">
-            </div>
-            <div>Cargando los pedidos</div>
-          </div>
-        </>
+  
+    // Aplicamos la búsqueda sobre los datos filtrados
+    const filtered = originalData.filter(row =>
+      // Verificamos si la propiedad es una cadena antes de llamar a toLowerCase()
+      (typeof row.horaEstimadaFinalizacion === 'string' && row.horaEstimadaFinalizacion.toLowerCase().includes(query.toLowerCase())) ||
+      (typeof row.total === 'string' && row.total.toLowerCase().includes(query.toLowerCase())) ||
+      (typeof row.estado === 'string' && row.estado.toLowerCase().includes(query.toLowerCase())) ||
+      (typeof row.tipoEnvio === 'string' && row.tipoEnvio.toLowerCase().includes(query.toLowerCase())) ||
+      (typeof row.formaPago === 'string' && row.formaPago.toLowerCase().includes(query.toLowerCase())) ||
+      (typeof row.fechaPedido === 'string' && row.fechaPedido.toLowerCase().includes(query.toLowerCase()))
     );
-  }
+    
+    // Actualizamos los datos filtrados con los resultados de la búsqueda
+    setFilterData(filtered);
+  
+    // Si no se encuentran resultados, mostramos un mensaje "Sin coincidencias"
+    if (filtered.length === 0 && !isQueryEmpty) {
+      setNoResults(false);
+      // Aquí puedes mostrar el mensaje "Sin coincidencias" en tu interfaz de usuario
+    }
+
+  };
+  
+const handleDownloadFactura = (rowData: any) => {
+  const pedidoId = rowData.id;
+  const url = `http://localhost:8080/factura/${pedidoId}`;
+  window.open(url);
+};
+
+const isDownloadEnabled = (rowData: any) => {
+  return rowData.estado === Estado.CANCELADO;
+};
+
+const columns = [
+  { id: 'horaEstimadaFinalizacion', label: 'Hora Estimada Finalización' },
+  { id: 'total', label: 'Total' },
+  { id: 'estado', label: 'Estado' },
+  { id: 'tipoEnvio', label: 'Tipo Envío' },
+  { id: 'formaPago', label: 'Forma Pago' },
+  { id: 'fechaPedido', label: 'Fecha Pedido', renderCell: (rowData: any) => <span>{new Date(rowData.fechaPedido).toLocaleDateString()}</span> },
+  { id: 'detallePedidos', label: 'Detalle del Pedido', renderCell: (rowData: any) => (
+    <div>
+      {rowData.detallePedidos.map((detalle: any, index: number) => (
+        <div key={index}>
+          <p>Cantidad: {detalle.cantidad}</p>
+          <p>Artículo: {detalle.articulo.denominacion}</p>
+        </div>
+      ))}
+    </div>
+  ) },
+  { id: 'actions', label: 'Acciones', renderCell: (rowData: any) => (
+    <Button 
+      className="btn btn-primary"
+      variant="contained" 
+      disabled={!isDownloadEnabled(rowData)}
+      onClick={() => handleDownloadFactura(rowData)}
+    >
+      Descargar 
+    </Button>
+  ) },
+];
+// if (!isAuthenticated) {
+//   return (
+//     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+//       <h3>Debes loguearte para ver tus pedidos</h3>
+//     </div>
+//   );
+// }
 
   return (
   <React.Fragment>
@@ -205,7 +177,7 @@ export const ListaPedidos = () => {
                 }}
               >
                 <Typography variant="h5" gutterBottom>
-                  Pedidos
+                  Mis Pedidos
                 </Typography>
                 <a
                   className="btn btn-primary"
@@ -220,12 +192,16 @@ export const ListaPedidos = () => {
                 <SearchBar onSearch={onSearch} />
               </Box>
               {/* Componente de tabla para mostrar los artículos manufacturados */}
-              <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} />
+              {filteredData.length === 0 ? (
+                <Typography variant="body1">Sin resultados</Typography>
+              ) : (
+                <TableComponent 
+                  data={filteredData}
+                  columns={columns}
+                />
+              )}
 
-              {/* Llamando a ModalCupon con la prop fetchCupones y cuponToEdit */}
-              {/* <ModalProducto getProducts={fetchPedidos} pedidoToEdit={pedidoToEdit !== null ? pedidoToEdit : undefined} /> */}
-
-              {/* <ModalEliminarProducto show={deleteModalOpen} onHide={handleCloseDeleteModal} product={pedidoToEdit} onDelete={handleDelete} /> */}
+              
             </Container>
           </Box>
         </CCol>
