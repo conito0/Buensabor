@@ -50,43 +50,16 @@ export const BaseNavBar = () => {
               <a
                 className="nav-link active text-white"
                 aria-current="page"
-                href="/categorias/1"
-              >
-                Categorias
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                className="nav-link active text-white"
-                aria-current="page"
-                href="/articuloManufacturado/1"
-              >
-                Articulos Manufacturados
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                className="nav-link active text-white"
-                aria-current="page"
-                href="/articuloInsumo/1"
-              >
-                Articulos Insumos
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                className="nav-link active text-white"
-                aria-current="page"
                 href="/pedidos/1"
               >
-                Pedidos
+                Mis Pedidos
               </a>
             </li>
           </ul>
         </div>
         <form className="d-flex align-items-center text-white" role="search">
           { isAuthenticated ? <div className={"px-2"}><img alt={"Imagen de perfil"} className={"rounded-4"} height={20} width={20} src={user?.picture}/><span> {user?.name}</span></div> : <></> }
-          <button hidden={isAuthenticated} onClick={handleLogin} type="button" className={"btn btn-light"}>Registro / Login</button>
+          <button hidden={isAuthenticated} onClick={handleLogin} type="button" className={"btn btn-light"}>Login</button>
           <button hidden={!isAuthenticated}  onClick={handleLogout} type="button" className={"btn btn-light"}>Logout</button>
         </form>
       </div>
