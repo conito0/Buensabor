@@ -44,21 +44,17 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
     const path = `${url}/${id}`;
     const options: RequestInit = {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: (token && { Authorization: `Bearer ${token}` }) || {}
     };
     return this.request(path, options);
   }
 
   // Método para obtener todos los elementos
-  async getAll(url: string, token: string): Promise<T[]> {
+  async getAll(url: string, token: string | undefined): Promise<T[]> {
     const path = url;
     const options: RequestInit = {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: (token && { Authorization: `Bearer ${token}` }) || {}
     };
     return this.requestAll(path, options);
   }
@@ -68,10 +64,9 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
     const path = url;
     const options: RequestInit = {
       method: "POST",
-      headers: {
+      headers: (token && { Authorization: `Bearer ${token}` }) || {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify(data),
     };
@@ -84,10 +79,9 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
     const path = `${url}/${id}`;
     const options: RequestInit = {
       method: "PUT",
-      headers: {
+      headers: (token && { Authorization: `Bearer ${token}` }) || {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify(data),
     };
@@ -99,10 +93,9 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
     const path = `${url}/${id}`;
     const options: RequestInit = {
       method: "DELETE",
-      headers: {
+      headers: (token && { Authorization: `Bearer ${token}` }) || {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
       },
     };
 
@@ -125,9 +118,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
     const options: RequestInit = {
       method: "POST",
       body: formData,
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: (token && { Authorization: `Bearer ${token}` }) || {}
     };
 
     return fetch(path, options);
@@ -138,9 +129,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
     const path = `${url}/${id}/${cantidad}`;
     const options: RequestInit = {
       method: "GET", // Usar GET ya que el backend lo espera
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: (token && { Authorization: `Bearer ${token}` }) || {}
     };
 
     try {
@@ -161,9 +150,8 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
     try {
       const response = await fetch(urlServer, {
         method: "POST",
-        headers: {
+        headers: (token && { Authorization: `Bearer ${token}` }) || {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(pedido),
       });
