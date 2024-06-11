@@ -167,6 +167,17 @@ export const ListaPedidos = () => {
       ),
     },
   ];
+  if (!isAuthenticated) {
+    return (
+        <>
+          <div style={{height: "calc(100vh - 56px)"}} className={"d-flex flex-column justify-content-center align-items-center w-100"}>
+            <div>
+            </div>
+            <h3>Debes loguearte para ver poder tus pedidos</h3>
+          </div>
+        </>
+    );
+  }
   return (
     <React.Fragment>
       <CContainer fluid style={{ backgroundColor: "#fff" }}>
