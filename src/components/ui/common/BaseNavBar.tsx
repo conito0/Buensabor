@@ -13,7 +13,7 @@ export const BaseNavBar = () => {
   const handleLogout = () => {
     logout({
       logoutParams: {
-        returnTo: "http://localhost:5173/carrito/1"
+        returnTo: "https://dashboard-front-five.vercel.app/carrito/1"
       }
     })
   }
