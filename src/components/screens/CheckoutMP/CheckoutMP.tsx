@@ -10,7 +10,6 @@ function CheckoutMP({ idPedido = 0 }) {
   const [mostrarPagoMP, setMostrarPagoMP] = useState(false); 
   const pedidoService = new PedidoService();
   const url = import.meta.env.VITE_API_URL;
-  const { getAccessTokenSilently } = useAuth0();
   const { isAuthenticated, user } = useAuth0();
 
  if (isAuthenticated && user) { // Verificamos si el usuario está autenticado y si hay datos de usuario
@@ -21,7 +20,7 @@ function CheckoutMP({ idPedido = 0 }) {
     if (idPedido != 0 || idPedido != null || idPedido != undefined) {
 
       try {
-        const pedido = await pedidoService.get(url + "pedido", idPedido.toString(), await getAccessTokenSilently({}));
+        const pedido = await pedidoService.get(url + "pedido", idPedido.toString());
         const response = await preferenceMPService.createPreferenceMP(pedido);
         if (response && response.id) {
           console.log("Preference id: " + response.id);

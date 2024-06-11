@@ -10,7 +10,7 @@ export const Registro = () => {
 
     const clienteService = new ClientService();
     const url = import.meta.env.VITE_API_URL;
-    const { getAccessTokenSilently, isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
+    const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
 
     if (isAuthenticated) {
         return <div style={{height: "calc(100vh - 88px)"}} className="d-flex flex-column justify-content-center align-items-center">
@@ -56,7 +56,7 @@ export const Registro = () => {
             initialValues={initialValues}
             onSubmit={async (values: Cliente) => {
                 try {
-                    await clienteService.post(url + "cliente", values, await getAccessTokenSilently({}));
+                    await clienteService.post(url + "cliente", values);
                     console.log("Se ha actualizado correctamente.");
 
                     loginWithRedirect({

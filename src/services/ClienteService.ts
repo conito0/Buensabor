@@ -2,13 +2,9 @@ import Cliente from "../types/Cliente";
 import BackendClient from "./BackendClient";
 
 export default class ClientService extends BackendClient<Cliente> {
-    public async getByEmail(baseUrl: string, email: string, token: string): Promise<Cliente | undefined> {
+    public async getByEmail(baseUrl: string, email: string): Promise<Cliente | undefined> {
         try {
-            const response = await fetch(`${baseUrl}/email/${email}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const response = await fetch(`${baseUrl}/email/${email}`);
             if (!response.ok) {
                 throw new Error(response.statusText);
             }

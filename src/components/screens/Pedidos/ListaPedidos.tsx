@@ -45,7 +45,7 @@ export const ListaPedidos = () => {
     try {
       if (isAuthenticated && user && user.email) {
         clienteService
-          .getByEmail(url + "cliente", user.email, await getAccessTokenSilently({}))
+          .getByEmail(url + "cliente", user.email)
           .then((cliente) => {
             if (cliente) {
               traerPedidos(cliente);

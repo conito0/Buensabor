@@ -11,7 +11,6 @@ import "./Producto.css";
 import { BaseNavBar } from "../../ui/common/BaseNavBar";
 import IArticuloInsumo from "../../../types/ArticuloInsumoType";
 import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
-import {useAuth0} from "@auth0/auth0-react";
 
 const Producto = () => {
   const [productos, setProductos] = useState<ArticuloDto[]>([]);
@@ -63,10 +62,10 @@ const Producto = () => {
   useEffect(() => {
     const fetchData = async () => {
       const productData = await productoService.getAll(
-        url + "articuloManufacturado", await getAccessTokenSilently({})
+        url + "articuloManufacturado"
       );
       const insumData = await articuloInsumoService.getAll(
-        url + "articuloInsumo", await getAccessTokenSilently({})
+        url + "articuloInsumo"
       );
 
       // Filtrar los productos manufacturados y los insumos
