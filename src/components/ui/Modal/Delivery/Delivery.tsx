@@ -7,6 +7,7 @@ import PaisService from "../../../../services/PaisService";
 import Localidad from "../../../../types/Localidad";
 import Provincia from "../../../../types/Provincia";
 import Pais from "../../../../types/Pais";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface DeliveryModalProps {
   show: boolean;
@@ -32,6 +33,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({
   const provinciaService = new ProvinciaService();
   const paisService = new PaisService();
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     fetchPaises();
@@ -51,7 +53,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({
 
   const fetchPaises = async () => {
     try {
-      const paisesData = await paisService.getAll(url + "pais");
+      const paisesData = await paisService.getAll(url + "pais", await getAccessTokenSilently({}));
       setPaises(paisesData);
     } catch (error) {
       console.error("Error fetching countries: ", error);
@@ -60,7 +62,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({
 
   const fetchProvincias = async (paisId: number) => {
     try {
-      const todasProvincias = await provinciaService.getAll(url + "provincia");
+      const todasProvincias = await provinciaService.getAll(url + "provincia", await getAccessTokenSilently({}));
       const provinciasFiltradas = todasProvincias.filter(
         (provincia) => provincia.pais.id === paisId
       );
@@ -72,7 +74,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({
 
   const fetchLocalidades = async (provinciaId: number) => {
     try {
-      const todasLocalidades = await localidadService.getAll(url + "localidad");
+      const todasLocalidades = await localidadService.getAll(url + "localidad", await getAccessTokenSilently({}));
       const localidadesFiltradas = todasLocalidades.filter(
         (localidad) => localidad.provincia.id === provinciaId
       );

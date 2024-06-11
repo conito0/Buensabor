@@ -6,6 +6,7 @@ import EmpresaService from "../../../../services/EmpresaService";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { toggleModal } from "../../../../redux/slices/Modal";
 import { useState, ChangeEvent } from 'react';
+import {useAuth0} from "@auth0/auth0-react";
 
 interface ModalEmpresaProps {
   getEmpresa: () => void;
@@ -16,6 +17,7 @@ interface ModalEmpresaProps {
 const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empresaToEdit }) => {
   const empresaService = new EmpresaService();
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
   const [file, setFile] = useState<File | null>(null);
 
 
@@ -83,11 +85,11 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
               let newCompanyId: string | null = null; // Cambiado de const a let
 
               if (empresaToEdit) {
-                await empresaService.put(url + "empresa", values.id.toString(), values);
+                await empresaService.put(url + "empresa", values.id.toString(), values, await getAccessTokenSilently({}));
                 console.log("Se ha actualizado correctamente.");
                 newCompanyId = values.id.toString();
               } else {
-                const response = await empresaService.post(url + "empresa", values);
+                const response = await empresaService.post(url + "empresa", values, await getAccessTokenSilently({}));
                 console.log("Se ha agregado correctamente.");
           
                 // Obtener el id de la nueva empresa desde la respuesta
@@ -96,7 +98,7 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
           
               // Verificar si hay un archivo seleccionado para cargar
               if (file && newCompanyId) {
-                const response = await empresaService.uploadFile(url + 'empresa/uploads', file, newCompanyId);
+                const response = await empresaService.uploadFile(url + 'empresa/uploads', file, newCompanyId, await getAccessTokenSilently({}));
                 console.log('Upload successful:', response);
               }
           

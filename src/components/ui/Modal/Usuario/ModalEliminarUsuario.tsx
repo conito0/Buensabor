@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import Usuario from '../../../../types/Usuario.ts';
 import UsuarioService from '../../../../services/UsuarioService';
+import {useAuth0} from "@auth0/auth0-react";
 
 interface ModalEliminarUsuarioProps {
   show: boolean;
@@ -13,11 +14,12 @@ interface ModalEliminarUsuarioProps {
 const ModalEliminarUsuario: React.FC<ModalEliminarUsuarioProps> = ({ show, onHide, usuario }) => {
   const usuarioService = new UsuarioService();
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
 
   const handleDelete = async () => {
     try {
       if (usuario && usuario.id) {
-        await usuarioService.delete(url + 'usuarios', usuario.id.toString());
+        await usuarioService.delete(url + 'usuarios', usuario.id.toString(), await getAccessTokenSilently({}));
         console.log('Se ha eliminado el usuario correctamente.');
         onHide(); // Cerramos el modal
       } else {

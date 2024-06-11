@@ -11,6 +11,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import ClientService from "../../../services/ClienteService.ts";
 import { Estado } from "../../../types/enums/Estado.ts";
 import { Button } from "react-bootstrap";
+import {BaseNavBar} from "../../ui/common/BaseNavBar.tsx";
 
 interface Row {
   [key: string]: any;
@@ -18,6 +19,7 @@ interface Row {
 export const ListaPedidos = () => {
 
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
   const dispatch = useAppDispatch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   const pedidoService = new PedidoService();
@@ -26,14 +28,14 @@ export const ListaPedidos = () => {
   const { isAuthenticated, user } = useAuth0();
   const clienteService = new ClientService();
   const [clienteId, setClienteId] = useState<number | null>(null);
-  const [noResults, setNoResults] = useState(false);
+  const [_, setNoResults] = useState(false);
   const [originalData, setOriginalData] = useState<Row[]>([]);
 
 
   const fetchData = async () => {
     try {
       if (isAuthenticated && user && user.email) {
-        const cliente = await clienteService.getByEmail(url + "cliente", user.email);
+        const cliente = await clienteService.getByEmail(url + "cliente", user.email, await getAccessTokenSilently({}));
         if(cliente){
           setClienteId(cliente.id);
         }
@@ -47,7 +49,7 @@ export const ListaPedidos = () => {
 
   const fetchPedidos = useCallback(async () => {
     try {
-      const pedidos = (await pedidoService.getAll(url + 'pedido')).filter((v) => !v.eliminado);
+      const pedidos = (await pedidoService.getAll(url + 'pedido', await getAccessTokenSilently({}))).filter((v) => !v.eliminado);
       console.log(pedidos)
       // Asegúrate de que sucursalId esté definido y conviértelo a un número
       if (clienteId) {        
@@ -152,62 +154,66 @@ const columns = [
 // }
 
   return (
-  <React.Fragment>
-    <CContainer fluid style={{backgroundColor: "#fff"}}>
-      <CRow>
-        <CCol>
-          <Box
-            component="main"
-            sx={{
-              flexGrow: 1,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              my: 2,
-            }}
-          >
-            <Container maxWidth="lg">
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  my: 1,
-                }}
-              >
-                <Typography variant="h5" gutterBottom>
-                  Mis Pedidos
-                </Typography>
-                <a
-                  className="btn btn-primary"
-                  href={`../productos/${sucursalId}`}
+      <>
+        <BaseNavBar />
+        <React.Fragment>
+          <CContainer fluid style={{backgroundColor: "#fff"}}>
+            <CRow>
+              <CCol>
+                <Box
+                    component="main"
+                    sx={{
+                      flexGrow: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      my: 2,
+                    }}
                 >
-                  +
-                  Pedido
-                </a>
-              </Box>
-              {/* Barra de búsqueda */}
-              <Box sx={{ mt: 2 }}>
-                <SearchBar onSearch={onSearch} />
-              </Box>
-              {/* Componente de tabla para mostrar los artículos manufacturados */}
-              {filteredData.length === 0 ? (
-                <Typography variant="body1">Sin resultados</Typography>
-              ) : (
-                <TableComponent 
-                  data={filteredData}
-                  columns={columns}
-                />
-              )}
+                  <Container maxWidth="lg">
+                    <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          my: 1,
+                        }}
+                    >
+                      <Typography variant="h5" gutterBottom>
+                        Mis Pedidos
+                      </Typography>
+                      <a
+                          className="btn btn-primary"
+                          href={`../productos/${sucursalId}`}
+                      >
+                        +
+                        Pedido
+                      </a>
+                    </Box>
+                    {/* Barra de búsqueda */}
+                    <Box sx={{ mt: 2 }}>
+                      <SearchBar onSearch={onSearch} />
+                    </Box>
+                    {/* Componente de tabla para mostrar los artículos manufacturados */}
+                    {filteredData.length === 0 ? (
+                        <Typography variant="body1">Sin resultados</Typography>
+                    ) : (
+                        <TableComponent
+                            data={filteredData}
+                            columns={columns}
+                        />
+                    )}
 
-              
-            </Container>
-          </Box>
-        </CCol>
-      </CRow>
-      </CContainer>
-      </React.Fragment>
+
+                  </Container>
+                </Box>
+              </CCol>
+            </CRow>
+          </CContainer>
+        </React.Fragment>
+      </>
+
 
   );
 }

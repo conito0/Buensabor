@@ -17,6 +17,7 @@ import ArticuloManufacturadoShorDtoService from "../../../../services/dtos/Artic
 import SucursalShortDtoService from "../../../../services/dtos/SucursalShortDtoService";
 import SucursalShorDto from "../../../../types/dto/SucursalShortDto";
 import { useParams } from "react-router-dom";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface ModalPromocionProps {
   getPromocion: () => void;
@@ -42,6 +43,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
 
   const [detalles, setDetalles] = useState<PromocionDetalle[]>([]);
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
   const today = new Date();
   const { sucursalId } = useParams();
   const promocionDetalleService = new PromocionDetalleService();
@@ -153,10 +155,10 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
       if (sucursalId) {
         const sucursalSeleccionada = await sucursalService.get(
           url + "sucursal",
-          sucursalId
+          sucursalId, await getAccessTokenSilently({})
         );
         const empresaId = sucursalSeleccionada.empresa.id;
-        const todasSucursales = await sucursalService.getAll(url + "sucursal");
+        const todasSucursales = await sucursalService.getAll(url + "sucursal", await getAccessTokenSilently({}));
         const sucursalesEmpresa = todasSucursales.filter(
           (sucursal) => sucursal.empresa.id === empresaId
         );
@@ -234,7 +236,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                         const respuesta2 = await promocionDetalleService.put(
                           url + "promocionDetalle",
                           detalle.id.toString(),
-                          detalle
+                          detalle, await getAccessTokenSilently({})
                         );
                         console.log("Detalle actualizado:", respuesta2);
                         return respuesta2; // Devolver la respuesta para procesamiento adicional
@@ -242,7 +244,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                         // Si el detalle no tiene un ID, insertarlo como nuevo
                         const respuesta2 = await promocionDetalleService.post(
                           url + "promocionDetalle",
-                          detalle
+                          detalle, await getAccessTokenSilently({})
                         );
                         console.log("Nuevo detalle insertado:", respuesta2);
                         return respuesta2; // Devolver la respuesta para procesamiento adicional
@@ -264,7 +266,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 promocion = await promocionService.put(
                   url + "promocion",
                   values.id.toString(),
-                  values
+                  values, await getAccessTokenSilently({})
                 );
                 console.log("Se ha actualizado correctamente.");
               } else {
@@ -277,7 +279,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                       // Realizar la solicitud 'post' para cada detalle
                       const respuesta2 = await promocionDetalleService.post(
                         url + "promocionDetalle",
-                        detalle
+                        detalle, await getAccessTokenSilently({})
                       );
                       console.log("Respuesta:", respuesta2);
                       return respuesta2; // Devolver la respuesta para procesamiento adicional
@@ -299,12 +301,12 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 values.promocionDetalle = respuestas;
                 console.log("Valores actualizados:", values);
 
-                promocion = await promocionService.post(url + "promocion", values);
+                promocion = await promocionService.post(url + "promocion", values, await getAccessTokenSilently({}));
                 console.log("Se ha agregado correctamente.");
               }
 
               if (file && promocion.id) {
-                const response = await promocionService.uploadFile(url + 'promocion/uploads', file, promocion.id.toString());
+                const response = await promocionService.uploadFile(url + 'promocion/uploads', file, promocion.id.toString(), await getAccessTokenSilently({}));
                 console.log('Upload successful:', response);
               }
 

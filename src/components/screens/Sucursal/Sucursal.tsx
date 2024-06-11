@@ -22,12 +22,15 @@ import EmpresaService from "../../../services/EmpresaService.ts";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import {useAuth0} from "@auth0/auth0-react";
+import {BaseNavBar} from "../../ui/common/BaseNavBar.tsx";
 interface Row {
   [key: string]: any;
 }
 
 export const ListaSucursal = () => {
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
   const { empresaId } = useParams(); // Obtén el ID de la URL
   const dispatch = useAppDispatch();
   // eslint-disable-next-line react-hooks/exhaustive-deps 
@@ -42,7 +45,7 @@ export const ListaSucursal = () => {
   const fetchEmpresa = useCallback(async () => {
     try {
       if (empresaId) {
-        const empresa = await empresaService.get(url + "empresa", empresaId);
+        const empresa = await empresaService.get(url + "empresa", empresaId, await getAccessTokenSilently({}));
         console.log("Detalles de la empresa:", empresa);
       }
     } catch (error) {
@@ -55,7 +58,7 @@ export const ListaSucursal = () => {
       try {
         const response = await sucursalService.get(
           url + "sucursal/getAllImagesBySucursalId",
-          sucursalId
+          sucursalId, await getAccessTokenSilently({})
         );
 
         if (Array.isArray(response) && response.length > 0) {
@@ -71,7 +74,7 @@ export const ListaSucursal = () => {
 
   const fetchSucursal = useCallback(async () => {
     try {
-      const sucursales = await sucursalService.getAll(url + "sucursal");
+      const sucursales = await sucursalService.getAll(url + "sucursal", await getAccessTokenSilently({}));
       const sucursalesConImagenes = await Promise.all(
         sucursales.map(async (sucursal) => {
           const imagenUrl = await fetchImages(sucursal.id.toString());
@@ -126,7 +129,7 @@ export const ListaSucursal = () => {
       if (sucursalToEdit && sucursalToEdit.id) {
         await sucursalService.delete(
           url + "sucursal",
-          sucursalToEdit.id.toString()
+          sucursalToEdit.id.toString(), await getAccessTokenSilently({})
         );
         console.log("Se ha eliminado correctamente.");
         handleCloseDeleteModal();
@@ -163,158 +166,162 @@ export const ListaSucursal = () => {
   };
 
   return (
-    <Box
-      component="main"
-      sx={{
-        flexGrow: 1,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        my: 2,
-      }}
-    >
-      <Container maxWidth="lg">
-        <Grid
-          container
-          spacing={4}
-          direction="row"
-          justifyContent="space-evenly"
-          alignItems="center"
-          style={{ minHeight: "80vh", paddingTop: "1rem" }}
+      <>
+        <BaseNavBar />
+        <Box
+            component="main"
+            sx={{
+              flexGrow: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              my: 2,
+            }}
         >
-          <Grid item xs={12} sm={6} md={4} onClick={handleAddSucursal}>
-            <Card
-              sx={{
-                maxWidth: 345,
-                boxShadow: 3,
-                borderRadius: 16,
-                cursor: "pointer",
-                transition: "transform 0.3s",
-                "&:hover": { transform: "scale(1.05)" },
-              }}
+          <Container maxWidth="lg">
+            <Grid
+                container
+                spacing={4}
+                direction="row"
+                justifyContent="space-evenly"
+                alignItems="center"
+                style={{ minHeight: "80vh", paddingTop: "1rem" }}
             >
-              <CardContent
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "100%",
-                  minHeight: 250,
-                }}
-              >
-                <AddIcon sx={{ fontSize: 48, marginBottom: 1 }} />
-                <Typography
-                  gutterBottom
-                  variant="h6"
-                  component="div"
-                  sx={{
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    color: "#333",
-                    marginTop: 1,
-                  }}
-                >
-                  Agregar Sucursal
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {filterData.map((sucursal) => (
-            <Grid item xs={12} sm={6} md={4} key={sucursal.id}>
-              <Card
-                sx={{
-                  maxWidth: 345,
-                  boxShadow: 3,
-                  borderRadius: 16,
-                  cursor: "pointer",
-                  transition: "transform 0.3s",
-                  "&:hover": { transform: "scale(1.05)" },
-                }}
-              >
-                {sucursal.imagen !== "" && (
-                  <CardMedia
-                    component="img"
-                    alt={sucursal.nombre}
-                    height="140"
-                    image={sucursal.imagen}
+              <Grid item xs={12} sm={6} md={4} onClick={handleAddSucursal}>
+                <Card
                     sx={{
-                      objectFit: "cover",
-                      borderRadius: "16px 16px 0 0",
-                      maxHeight: 140,
+                      maxWidth: 345,
+                      boxShadow: 3,
+                      borderRadius: 16,
+                      cursor: "pointer",
+                      transition: "transform 0.3s",
+                      "&:hover": { transform: "scale(1.05)" },
                     }}
-                  />
-                )}
-
-                <CardContent
-                  sx={
-                    sucursal.imagen == ""
-                      ? {
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          height: "100%",
-                          minHeight: 200,
-                        }
-                      : {}
-                  }
                 >
-                  {" "}
-                  <Link
-                    to={`/inicio/${sucursal.id}`}
-                    style={{ textDecoration: "none" }}
-                  >
-                    <Typography
-                      gutterBottom
-                      variant="h6"
-                      component="div"
+                  <CardContent
                       sx={{
-                        fontWeight: "bold",
-                        color: "#333",
-                        textAlign: "center",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: "100%",
+                        minHeight: 250,
                       }}
+                  >
+                    <AddIcon sx={{ fontSize: 48, marginBottom: 1 }} />
+                    <Typography
+                        gutterBottom
+                        variant="h6"
+                        component="div"
+                        sx={{
+                          fontWeight: "bold",
+                          textAlign: "center",
+                          color: "#333",
+                          marginTop: 1,
+                        }}
                     >
-                      {sucursal.nombre}
+                      Agregar Sucursal
                     </Typography>
-                  </Link>
-                  <Typography variant="body2" color="text.secondary">
-                    {sucursal.razonSocial}
-                  </Typography>
-                </CardContent>
-                <CardActions sx={{ justifyContent: "center" }}>
-                  <Button
-                    size="small"
-                    onClick={() => handleOpenDeleteModal(sucursal)}
-                  >
-                    <DeleteIcon style={{ color: "red" }} />{" "}
-                  </Button>
-                  <Button
-                    size="small"
-                    onClick={() => handleOpenEditModal(sucursal)}
-                  >
-                    <EditIcon style={{ color: "green" }} />{" "}
-                  </Button>
-                </CardActions>
-              </Card>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              {filterData.map((sucursal) => (
+                  <Grid item xs={12} sm={6} md={4} key={sucursal.id}>
+                    <Card
+                        sx={{
+                          maxWidth: 345,
+                          boxShadow: 3,
+                          borderRadius: 16,
+                          cursor: "pointer",
+                          transition: "transform 0.3s",
+                          "&:hover": { transform: "scale(1.05)" },
+                        }}
+                    >
+                      {sucursal.imagen !== "" && (
+                          <CardMedia
+                              component="img"
+                              alt={sucursal.nombre}
+                              height="140"
+                              image={sucursal.imagen}
+                              sx={{
+                                objectFit: "cover",
+                                borderRadius: "16px 16px 0 0",
+                                maxHeight: 140,
+                              }}
+                          />
+                      )}
+
+                      <CardContent
+                          sx={
+                            sucursal.imagen == ""
+                                ? {
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  height: "100%",
+                                  minHeight: 200,
+                                }
+                                : {}
+                          }
+                      >
+                        {" "}
+                        <Link
+                            to={`/inicio/${sucursal.id}`}
+                            style={{ textDecoration: "none" }}
+                        >
+                          <Typography
+                              gutterBottom
+                              variant="h6"
+                              component="div"
+                              sx={{
+                                fontWeight: "bold",
+                                color: "#333",
+                                textAlign: "center",
+                              }}
+                          >
+                            {sucursal.nombre}
+                          </Typography>
+                        </Link>
+                        <Typography variant="body2" color="text.secondary">
+                          {sucursal.razonSocial}
+                        </Typography>
+                      </CardContent>
+                      <CardActions sx={{ justifyContent: "center" }}>
+                        <Button
+                            size="small"
+                            onClick={() => handleOpenDeleteModal(sucursal)}
+                        >
+                          <DeleteIcon style={{ color: "red" }} />{" "}
+                        </Button>
+                        <Button
+                            size="small"
+                            onClick={() => handleOpenEditModal(sucursal)}
+                        >
+                          <EditIcon style={{ color: "green" }} />{" "}
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
-        <ModalEliminarSucursal
-          show={deleteModalOpen}
-          onHide={handleCloseDeleteModal}
-          sucursal={sucursalToEdit}
-          onDelete={handleDelete}
-        />
-        <ModalSucursal
-          modalName="modal"
-          getSucursal={fetchSucursal}
-          sucursalToEdit={sucursalToEdit !== null ? sucursalToEdit : undefined}
-          empresaTieneCasaMatriz={casaMatriz} // Pasa el valor de casaMatriz aquí
-        />
-      </Container>
-    </Box>
+            <ModalEliminarSucursal
+                show={deleteModalOpen}
+                onHide={handleCloseDeleteModal}
+                sucursal={sucursalToEdit}
+                onDelete={handleDelete}
+            />
+            <ModalSucursal
+                modalName="modal"
+                getSucursal={fetchSucursal}
+                sucursalToEdit={sucursalToEdit !== null ? sucursalToEdit : undefined}
+                empresaTieneCasaMatriz={casaMatriz} // Pasa el valor de casaMatriz aquí
+            />
+          </Container>
+        </Box>
+      </>
+
   );
 };

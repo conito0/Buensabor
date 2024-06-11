@@ -15,6 +15,7 @@ import ProvinciaService from "../../../../services/ProvinciaService";
 import Provincia from "../../../../types/Provincia";
 import PaisService from "../../../../services/PaisService";
 import Pais from "../../../../types/Pais";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface ModalSucursalProps {
   getSucursal: () => void;
@@ -31,6 +32,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 }) => {
   const sucursalService = new SucursalService();
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
 
   const localidadService = new LocalidaService();
   const empresaService = new EmpresaService();
@@ -118,7 +120,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 
   const fetchPais = async () => {
     try {
-      const paisesData = await paisService.getAll(url + "pais");
+      const paisesData = await paisService.getAll(url + "pais", await getAccessTokenSilently({}));
       setPaises(paisesData);
     } catch (error) {
       console.error("Error al obtener los paises: ", error);
@@ -128,7 +130,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 
   const fetchProvinciasData = async (paisId: number | null) => {
     try {
-      const todasProvincias = await provinviaService.getAll(url + "provincia");
+      const todasProvincias = await provinviaService.getAll(url + "provincia", await getAccessTokenSilently({}));
       if (paisId) {
         const provinciaPais = todasProvincias.filter(
           (provincia: any) => provincia.pais.id === paisId
@@ -145,7 +147,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 
   const fetchLocalidadesData = async (provinciaId: number | null) => {
     try {
-      const todasLocalidades = await localidadService.getAll(url + "localidad");
+      const todasLocalidades = await localidadService.getAll(url + "localidad", await getAccessTokenSilently({}));
       if (provinciaId) {
         const localidadProvincia = todasLocalidades.filter(
           (localidad: any) => localidad.provincia.id === provinciaId
@@ -226,40 +228,40 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
               if (sucursalToEdit) {
                 const localidad = await localidadService.get(
                   url + "localidad",
-                  values.localidadId
+                  values.localidadId, await getAccessTokenSilently({})
                 );
                 values.domicilio.localidad = localidad;
                 // Update address (domicilio)
                 const domicilio = await domicilioService.put(
                   url + "domicilio",
                   values.domicilio.id.toString(),
-                  values.domicilio
+                  values.domicilio, await getAccessTokenSilently({})
                 );
                 values.domicilio = domicilio;
                 // Update branch details
                 await sucursalService.put(
                   url + "sucursal",
                   values.id.toString(),
-                  values
+                  values, await getAccessTokenSilently({})
                 );
                 newCompanyId = values.id.toString(); //asigno el id de la sucursal
               } else {
                 if (empresaId) {
                   const empresa = await empresaService.get(
                     url + "empresa",
-                    empresaId
+                    empresaId, await getAccessTokenSilently({})
                   );
                   values.empresa = empresa;
 
                   const localidad = await localidadService.get(
                     url + "localidad",
-                    values.localidadId
+                    values.localidadId, await getAccessTokenSilently({})
                   );
                   values.domicilio.localidad = localidad;
 
                   const domicilio = await domicilioService.post(
                     url + "domicilio",
-                    values.domicilio
+                    values.domicilio, await getAccessTokenSilently({})
                   );
                   values.domicilio = domicilio;
 
@@ -271,13 +273,13 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 
                   const response = await sucursalService.post(
                     url + "sucursal",
-                    values
+                    values, await getAccessTokenSilently({})
                   );
                   newCompanyId = response.id.toString();
                 }
               }
               if (file && newCompanyId) {
-                const response = await sucursalService.uploadFile(url + 'sucursal/uploads', file, newCompanyId);
+                const response = await sucursalService.uploadFile(url + 'sucursal/uploads', file, newCompanyId, await getAccessTokenSilently({}));
                 console.log('Upload successful:', response);
               }
 

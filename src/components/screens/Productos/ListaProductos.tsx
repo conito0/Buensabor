@@ -15,6 +15,8 @@ import UnidadMedida from "../../../types/UnidadMedida.ts";
 import { handleSearch } from "../../../utils.ts/utils.ts";
 import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
 import { useParams } from "react-router-dom";
+import {useAuth0} from "@auth0/auth0-react";
+import {BaseNavBar} from "../../ui/common/BaseNavBar.tsx";
 
 interface Row {
   [key: string]: any;
@@ -29,6 +31,7 @@ interface Column {
 export const ListaProductos = () => {
 
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
   const dispatch = useAppDispatch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   const productoService = new ArticuloManufacturadoService();
@@ -44,7 +47,7 @@ export const ListaProductos = () => {
 
   const fetchImages = useCallback(async (productoId: string) =>{
     try{
-      const response = await productoService.get(url + 'articuloManufacturado/getAllImagesByArticuloManufacturadoId', productoId);
+      const response = await productoService.get(url + 'articuloManufacturado/getAllImagesByArticuloManufacturadoId', productoId, await getAccessTokenSilently({}));
 
       if(Array.isArray(response) && response.length > 0){
         return response[0].url;
@@ -57,7 +60,7 @@ export const ListaProductos = () => {
 
   const fetchProductos = useCallback(async () => {
     try {
-      const productos = (await productoService.getAll(url + 'articuloManufacturado')).filter((v) => !v.eliminado);
+      const productos = (await productoService.getAll(url + 'articuloManufacturado', await getAccessTokenSilently({}))).filter((v) => !v.eliminado);
       
       // Asegúrate de que sucursalId esté definido y conviértelo a un número
       if (sucursalId) {
@@ -130,7 +133,7 @@ export const ListaProductos = () => {
   const handleDelete = async () => {
     try {
       if (productToEdit && productToEdit.id) {
-        await productoService.delete(url + 'articuloManufacturado', productToEdit.id.toString());
+        await productoService.delete(url + 'articuloManufacturado', productToEdit.id.toString(), await getAccessTokenSilently({}));
         console.log('Se ha eliminado correctamente.');
         handleCloseDeleteModal(); // Cerrar el modal de eliminación
         fetchProductos();
@@ -229,58 +232,61 @@ export const ListaProductos = () => {
     );
   }
   return (
-  <React.Fragment>
-    <CContainer fluid style={{backgroundColor: "#fff"}}>
-      <CRow>
-        <CCol>
-          <Box
-            component="main"
-            sx={{
-              flexGrow: 1,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              my: 2,
-            }}
-          >
-            <Container maxWidth="lg">
+    <>
+      <BaseNavBar />
+      <React.Fragment>
+        <CContainer fluid style={{backgroundColor: "#fff"}}>
+          <CRow>
+            <CCol>
               <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  my: 1,
-                }}
+                  component="main"
+                  sx={{
+                    flexGrow: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    my: 2,
+                  }}
               >
-                <Typography variant="h5" gutterBottom>
-                  Artículos Manufacturados
-                </Typography>
-                <button
-                  className="btn btn-primary"
-                  onClick={handleAddProduct}
-                >
-                  +
-                  Artículos Manufacturados
-                </button>
-              </Box>
-              {/* Barra de búsqueda */}
-              <Box sx={{ mt: 2 }}>
-                <SearchBar onSearch={onSearch} />
-              </Box>
-              {/* Componente de tabla para mostrar los artículos manufacturados */}
-              <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} />
+                <Container maxWidth="lg">
+                  <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        my: 1,
+                      }}
+                  >
+                    <Typography variant="h5" gutterBottom>
+                      Artículos Manufacturados
+                    </Typography>
+                    <button
+                        className="btn btn-primary"
+                        onClick={handleAddProduct}
+                    >
+                      +
+                      Artículos Manufacturados
+                    </button>
+                  </Box>
+                  {/* Barra de búsqueda */}
+                  <Box sx={{ mt: 2 }}>
+                    <SearchBar onSearch={onSearch} />
+                  </Box>
+                  {/* Componente de tabla para mostrar los artículos manufacturados */}
+                  <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} />
 
-              {/* Llamando a ModalCupon con la prop fetchCupones y cuponToEdit */}
-              <ModalProducto getProducts={fetchProductos} productToEdit={productToEdit !== null ? productToEdit : undefined} />
+                  {/* Llamando a ModalCupon con la prop fetchCupones y cuponToEdit */}
+                  <ModalProducto getProducts={fetchProductos} productToEdit={productToEdit !== null ? productToEdit : undefined} />
 
-              <ModalEliminarProducto show={deleteModalOpen} onHide={handleCloseDeleteModal} product={productToEdit} onDelete={handleDelete} />
-            </Container>
-          </Box>
-        </CCol>
-      </CRow>
-      </CContainer>
+                  <ModalEliminarProducto show={deleteModalOpen} onHide={handleCloseDeleteModal} product={productToEdit} onDelete={handleDelete} />
+                </Container>
+              </Box>
+            </CCol>
+          </CRow>
+        </CContainer>
       </React.Fragment>
+    </>
 
   );
 }

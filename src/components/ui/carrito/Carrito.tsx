@@ -69,6 +69,7 @@ export const Carrito = () => {
 
   // const domicilioService = new DomicilioService();
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     fetchPaises();
@@ -88,7 +89,7 @@ export const Carrito = () => {
 
   const fetchPaises = async () => {
     try {
-      const paisesData = await paisService.getAll(url + "pais");
+      const paisesData = await paisService.getAll(url + "pais", await getAccessTokenSilently({}));
       setPaises(paisesData);
     } catch (error) {
       console.error("Error fetching countries: ", error);
@@ -97,7 +98,7 @@ export const Carrito = () => {
 
   const fetchProvincias = async (paisId: number) => {
     try {
-      const todasProvincias = await provinciaService.getAll(url + "provincia");
+      const todasProvincias = await provinciaService.getAll(url + "provincia", await getAccessTokenSilently({}));
       const provinciasFiltradas = todasProvincias.filter(
         (provincia) => provincia.pais.id === paisId
       );
@@ -109,7 +110,7 @@ export const Carrito = () => {
 
   const fetchLocalidades = async (provinciaId: number) => {
     try {
-      const todasLocalidades = await localidadService.getAll(url + "localidad");
+      const todasLocalidades = await localidadService.getAll(url + "localidad", await getAccessTokenSilently({}));
       const localidadesFiltradas = todasLocalidades.filter(
         (localidad) => localidad.provincia.id === provinciaId
       );
