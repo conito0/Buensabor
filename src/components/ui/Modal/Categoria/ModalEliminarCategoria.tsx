@@ -3,6 +3,7 @@ import { Button, Modal } from 'react-bootstrap';
 import Categoria from '../../../../types/Categoria';
 import CategoriaService from '../../../../services/CategoriaService';
 import CategoriaShorService from '../../../../services/dtos/CategoriaShorService';
+import {useAuth0} from "@auth0/auth0-react";
 
 interface ModalEliminarCategoriaProps {
     show: boolean;
@@ -15,6 +16,7 @@ interface ModalEliminarCategoriaProps {
 const ModalEliminarCategoria: React.FC<ModalEliminarCategoriaProps> = ({ show, categoria, onClose, getCategories }) => {
     const categoriaService = new CategoriaService();
     const url = import.meta.env.VITE_API_URL;
+    const { getAccessTokenSilently } = useAuth0();
     const categoriaShortService = new CategoriaShorService();
 
     const handleEliminar = async () => {
@@ -22,10 +24,10 @@ const ModalEliminarCategoria: React.FC<ModalEliminarCategoriaProps> = ({ show, c
             if (categoria && categoria.id) {
                 // Elimino las subcategorias de la categoria que elimino
                 categoria.subCategorias.map(async subCategoria => {
-                    await categoriaShortService.delete(url + 'categoria', subCategoria.id.toString());
+                    await categoriaShortService.delete(url + 'categoria', subCategoria.id.toString(), await getAccessTokenSilently({}));
                 });
 
-                await categoriaService.delete(url + 'categoria', categoria.id.toString());
+                await categoriaService.delete(url + 'categoria', categoria.id.toString(), await getAccessTokenSilently({}));
                 console.log('Se ha eliminado correctamente.');
                 getCategories();
                 onClose(); // Cerramos el modal después de eliminar

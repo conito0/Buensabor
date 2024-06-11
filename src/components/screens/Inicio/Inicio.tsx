@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import {BaseNavBar} from "../../ui/common/BaseNavBar.tsx";
 
 const images = [
   'img1.jpeg',
@@ -19,6 +20,7 @@ export const Inicio = () => {
 
   return (
     <>
+      <BaseNavBar />
       <div>
         <h1 className='text-center m-3'>El Buen Sabor</h1>
         <div id="carouselExample" className="carousel slide">

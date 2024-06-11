@@ -2,14 +2,15 @@ import {useAuth0} from "@auth0/auth0-react";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import {Button} from "react-bootstrap";
 import * as Yup from "yup";
-import {Cliente} from "../../../types/Cliente.ts";
 import ClientService from "../../../services/ClienteService.ts";
+import Cliente from "../../../types/Cliente.ts";
+import {BaseNavBar} from "../../ui/common/BaseNavBar.tsx";
 
 export const Registro = () => {
 
     const clienteService = new ClientService();
     const url = import.meta.env.VITE_API_URL;
-    const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
+    const { getAccessTokenSilently, isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
 
     if (isAuthenticated) {
         return <div style={{height: "calc(100vh - 88px)"}} className="d-flex flex-column justify-content-center align-items-center">
@@ -39,6 +40,7 @@ export const Registro = () => {
         email: '',
         telefono: '',
         usuario: {
+            id: 0,
             email: '',
             auth0Id: '',
             rol: '',
@@ -47,12 +49,13 @@ export const Registro = () => {
     }
 
     return <>
+        <BaseNavBar />
         <Formik
             validationSchema={validationSchema}
             initialValues={initialValues}
             onSubmit={async (values: Cliente) => {
                 try {
-                    await clienteService.post(url + "cliente", values);
+                    await clienteService.post(url + "cliente", values, await getAccessTokenSilently({}));
                     console.log("Se ha actualizado correctamente.");
 
                     loginWithRedirect({

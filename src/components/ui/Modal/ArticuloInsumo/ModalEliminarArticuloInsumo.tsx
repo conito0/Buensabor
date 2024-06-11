@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import ArticuloInsumoService from '../../../../services/ArticuloInsumoService';
 import ArticuloInsumo from '../../../../types/ArticuloInsumoType';
+import {useAuth0} from "@auth0/auth0-react";
 
 interface ModalEliminarArticuloInsumoProps {
   show: boolean;
@@ -12,11 +13,12 @@ interface ModalEliminarArticuloInsumoProps {
 const ModalEliminarArticuloInsumo: React.FC<ModalEliminarArticuloInsumoProps> = ({ show, onHide, articuloInsumo }) => {
     const articuloInsumoService = new ArticuloInsumoService();
     const url = import.meta.env.VITE_API_URL;
+    const { getAccessTokenSilently } = useAuth0();
 
     const handleDelete = async () => {
       try {
         if (articuloInsumo && articuloInsumo.id) {
-          await articuloInsumoService.delete(url + 'articuloInsumo',articuloInsumo.id.toString());
+          await articuloInsumoService.delete(url + 'articuloInsumo',articuloInsumo.id.toString(), await getAccessTokenSilently({}));
           console.log('Se ha eliminado correctamente.');
           onHide(); // Cerramos el modal
         } else {

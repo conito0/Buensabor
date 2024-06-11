@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import SucursalService from "../../../../services/SucursalService";
 import Sucursal from "../../../../types/Sucursal";
 import CategoriaShorService from "../../../../services/dtos/CategoriaShorService";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface ModalCategoriaProps {
   open: boolean;
@@ -27,6 +28,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
   const categoriaService = new CategoriaService();
   const categoriaShortService = new CategoriaShorService();
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
   const { sucursalId } = useParams();
   const sucursalService = new SucursalService();
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
@@ -36,10 +38,10 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
       if (sucursalId) {
         const sucursalSeleccionada = await sucursalService.get(
           url + "sucursal",
-          sucursalId
+          sucursalId, await getAccessTokenSilently({})
         );
         const empresaId = sucursalSeleccionada.empresa.id;
-        const todasSucursales = await sucursalService.getAll(url + "sucursal");
+        const todasSucursales = await sucursalService.getAll(url + "sucursal", await getAccessTokenSilently({}));
         const sucursalesEmpresa = todasSucursales.filter(
           (sucursal) => sucursal.empresa.id === empresaId
         );
@@ -118,13 +120,13 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
                   await categoriaShortService.put(
                     url + "categoria",
                     subCategoria.id.toString(),
-                    subCategoria
+                    subCategoria, await getAccessTokenSilently({})
                   );
                 });
                 await categoriaService.put(
                   url + "categoria",
                   values.id.toString(),
-                  values
+                  values, await getAccessTokenSilently({})
                 );
                 console.log("Categoría actualizada correctamente.", values);
               } else {
@@ -140,7 +142,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
 
                 console.log("Valores actualizados:", values);
 
-                await categoriaService.post(url + "categoria", values);
+                await categoriaService.post(url + "categoria", values, await getAccessTokenSilently({}));
                 console.log("Categoría agregada correctamente.", values);
 
                 // const respuesta = await sucursalService.get(url + 'sucursal', '1');

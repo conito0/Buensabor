@@ -12,6 +12,7 @@ import CategoriaService from "../../../../services/CategoriaService";
 import Categoria from "../../../../types/Categoria";
 import ImagenArticulo from "../../../../types/ImagenArticulo";
 import { useParams } from "react-router-dom";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface ModalArticuloInsumoProps {
   getArticulosInsumo: () => void;
@@ -29,6 +30,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
 
   const initialValues: ArticuloInsumo = {
     id: articuloToEdit ? articuloToEdit.id : 0,
@@ -85,7 +87,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   };
   const fetchCategorias = useCallback(async () => {
     try {
-      const categorias = await categoriaService.getAll(url + "categoria");
+      const categorias = await categoriaService.getAll(url + "categoria", await getAccessTokenSilently({}));
 
       if (sucursalId) {
         const parsedSucursalId = parseInt(sucursalId, 10);
@@ -105,7 +107,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
 
   const fetchUnidadesMedida = async () => {
     try {
-      const unidades = await unidadService.getAll(url + "unidadMedida");
+      const unidades = await unidadService.getAll(url + "unidadMedida", await getAccessTokenSilently({}));
       setUnidadesMedida(unidades);
     } catch (error) {
       console.error("Error al obtener las unidades de medida:", error);
@@ -154,7 +156,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                 await articuloInsumoService.put(
                   url + "articuloInsumo",
                   values.id.toString(),
-                  values
+                  values, await getAccessTokenSilently({})
                 );
                 console.log(values)
                 console.log("Se ha actualizado correctamente.");
@@ -164,7 +166,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
 
                 const response = await articuloInsumoService.post(
                   url + "articuloInsumo",
-                  values
+                  values, await getAccessTokenSilently({})
                 );
 
                 console.log("Se ha agregado correctamente.");
@@ -176,7 +178,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                 const response = await articuloInsumoService.uploadFile(
                   url + "articuloInsumo/uploads",
                   file,
-                  articuloId
+                  articuloId, await getAccessTokenSilently({})
                 );
                 console.log("Upload successful:", response);
               }

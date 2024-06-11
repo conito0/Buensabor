@@ -12,9 +12,12 @@ import { handleSearch } from "../../../utils.ts/utils.ts";
 import { CCol, CContainer, CRow } from "@coreui/react";
 import { useParams } from "react-router-dom";
 import ListaCategoria from "./ListaCategoria.tsx";
+import {useAuth0} from "@auth0/auth0-react";
+import {BaseNavBar} from "../../ui/common/BaseNavBar.tsx";
 
 const Categoria = () => {
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const categoriaService = new CategoriaService();
   const dispatch = useAppDispatch();
@@ -30,7 +33,7 @@ const Categoria = () => {
 
   const fetchCategorias = useCallback(async () => {
     try {
-      const categorias = await categoriaService.getAll(url + "categoria");
+      const categorias = await categoriaService.getAll(url + "categoria", await getAccessTokenSilently({}));
   
       // Filtrar las subcategorías para obtener sus IDs
       const subCategoriaIds = categorias.filter(categoria => categoria.subCategorias.length > 0)
@@ -94,7 +97,7 @@ const Categoria = () => {
       if (selectedCategoria && selectedCategoria.id) {
         await categoriaService.delete(
           url + "categoria",
-          selectedCategoria.id.toString()
+          selectedCategoria.id.toString(), await getAccessTokenSilently({})
         );
         console.log("Se ha eliminado correctamente.");
         handleCloseModal(); // Cerramos el modal después de eliminar
@@ -113,66 +116,70 @@ const Categoria = () => {
   };
 
   return (
-    <React.Fragment>
-      <CContainer fluid style={{backgroundColor: "#fff"}}>
-        <CRow>
-          <CCol>
-            <Box component="main" sx={{ flexGrow: 1, my: 2 }}>
-              <Container>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    my: 1,
-                  }}
-                >
-                  <Typography variant="h5" gutterBottom>
-                    Categorías
-                  </Typography>
-                  <Button
-                    sx={{
-                      bgcolor: "#9c27b0",
-                      "&:hover": {
-                        bgcolor: "#9c27b0",
-                      },
-                    }}
-                    variant="contained"
-                    startIcon={<Add />}
-                    onClick={handleAgregarCategoria}
-                  >
-                    Categoría
-                  </Button>
+      <>
+        <BaseNavBar />
+        <React.Fragment>
+          <CContainer fluid style={{backgroundColor: "#fff"}}>
+            <CRow>
+              <CCol>
+                <Box component="main" sx={{ flexGrow: 1, my: 2 }}>
+                  <Container>
+                    <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          my: 1,
+                        }}
+                    >
+                      <Typography variant="h5" gutterBottom>
+                        Categorías
+                      </Typography>
+                      <Button
+                          sx={{
+                            bgcolor: "#9c27b0",
+                            "&:hover": {
+                              bgcolor: "#9c27b0",
+                            },
+                          }}
+                          variant="contained"
+                          startIcon={<Add />}
+                          onClick={handleAgregarCategoria}
+                      >
+                        Categoría
+                      </Button>
+                    </Box>
+                    <Box sx={{ mt: 2 }}>
+                      <SearchBar onSearch={onSearch} />
+                    </Box>
+                    <ListaCategoria
+                        categorias={filteredData}
+                        onEditar={handleEditarCategoria}
+                        onDelete={handleEliminarCategoria}
+                        onAddSubCategoria={handleAgregarSubCategoria}
+                        getCategories={() => fetchCategorias()}
+                    />
+                    <ModalCategoria
+                        open={modalOpen}
+                        onClose={handleCloseModal}
+                        getCategories={() => fetchCategorias()}
+                        categoryToEdit={selectedCategoria}
+                    />
+                    <ModalEliminarCategoria
+                        show={eliminarModalOpen}
+                        categoria={selectedCategoria}
+                        onDelete={handleEliminar}
+                        getCategories={() => fetchCategorias()}
+                        onClose={() => setEliminarModalOpen(false)}
+                    />
+                  </Container>
                 </Box>
-                <Box sx={{ mt: 2 }}>
-                  <SearchBar onSearch={onSearch} />
-                </Box>
-                <ListaCategoria
-                  categorias={filteredData}
-                  onEditar={handleEditarCategoria}
-                  onDelete={handleEliminarCategoria}
-                  onAddSubCategoria={handleAgregarSubCategoria}
-                  getCategories={() => fetchCategorias()}
-                />
-                <ModalCategoria
-                  open={modalOpen}
-                  onClose={handleCloseModal}
-                  getCategories={() => fetchCategorias()}
-                  categoryToEdit={selectedCategoria}
-                />
-                <ModalEliminarCategoria
-                  show={eliminarModalOpen}
-                  categoria={selectedCategoria}
-                  onDelete={handleEliminar} 
-                  getCategories={() => fetchCategorias()}
-                  onClose={() => setEliminarModalOpen(false)}
-                />
-              </Container>
-            </Box>
-          </CCol>
-        </CRow>
-      </CContainer>
-    </React.Fragment>
+              </CCol>
+            </CRow>
+          </CContainer>
+        </React.Fragment>
+      </>
+
   );
 };
 

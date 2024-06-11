@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import Empresa from '../../../../types/Empresa';
 import EmpresaService from '../../../../services/EmpresaService';
+import {useAuth0} from "@auth0/auth0-react";
 
 interface ModalEliminarEmpresaProps {
   show: boolean;
@@ -12,11 +13,12 @@ interface ModalEliminarEmpresaProps {
 const ModalEliminarEmpresa: React.FC<ModalEliminarEmpresaProps> = ({ show, onHide, empresa }) => {
     const empresaService = new EmpresaService();
     const url = import.meta.env.VITE_API_URL;
+    const { getAccessTokenSilently } = useAuth0();
   
     const handleDelete = async () => {
       try {
         if (empresa && empresa.id) {
-          await empresaService.delete(url + 'empresa',empresa.id.toString());
+          await empresaService.delete(url + 'empresa',empresa.id.toString(), await getAccessTokenSilently({}));
           console.log('Se ha eliminado correctamente.');
           onHide(); // Cerramos el modal
         } else {

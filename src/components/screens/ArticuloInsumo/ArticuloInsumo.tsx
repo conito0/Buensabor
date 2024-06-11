@@ -13,6 +13,8 @@ import UnidadMedida from "../../../types/UnidadMedida.ts";
 import { CContainer, CRow, CCol } from "@coreui/react";
 import { useParams } from "react-router-dom";
 import TableComponent from "../../ui/Table/Table.tsx";
+import {useAuth0} from "@auth0/auth0-react";
+import {BaseNavBar} from "../../ui/common/BaseNavBar.tsx";
 
 interface Row {
   [key: string]: any;
@@ -26,6 +28,7 @@ interface Column {
 
 export const ListaArticulosInsumo = () => {
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
   const dispatch = useAppDispatch();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const articuloInsumoService = new ArticuloInsumoService();
@@ -41,7 +44,7 @@ export const ListaArticulosInsumo = () => {
 
   const fetchImages = useCallback(async (articuloInsumoId: string) => {
     try {
-      const response = await articuloInsumoService.get(url + 'articuloInsumo/getAllImagesByInsumoId', articuloInsumoId);
+      const response = await articuloInsumoService.get(url + 'articuloInsumo/getAllImagesByInsumoId', articuloInsumoId, await getAccessTokenSilently({}));
 
       if (Array.isArray(response) && response.length > 0) {
         return response[0].url;
@@ -56,7 +59,7 @@ export const ListaArticulosInsumo = () => {
     try {
       if (sucursalId) {
         const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
-        const articulosInsumo = await articuloInsumoService.getAll(url + "articuloInsumo");
+        const articulosInsumo = await articuloInsumoService.getAll(url + "articuloInsumo", await getAccessTokenSilently({}));
         const artInsumoConImagenes = await Promise.all(
           articulosInsumo.map(async (articuloInsumo) => {
             const imagenUrl = await fetchImages(articuloInsumo.id.toString());
@@ -204,64 +207,68 @@ export const ListaArticulosInsumo = () => {
     );
   }
   return (
-    <React.Fragment>
-      <CContainer fluid style={{backgroundColor: "#fff"}}>
-        <CRow>
-          <CCol>
-            <Box
-              component="main"
-              sx={{
-                flexGrow: 1,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                my: 2,
-              }}
-            >
-              <Container maxWidth="lg">
+      <>
+        <BaseNavBar />
+        <React.Fragment>
+          <CContainer fluid style={{backgroundColor: "#fff"}}>
+            <CRow>
+              <CCol>
                 <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    my: 1,
-                  }}
+                    component="main"
+                    sx={{
+                      flexGrow: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      my: 2,
+                    }}
                 >
-                  <Typography variant="h5" gutterBottom>
-                    Artículos de Insumo
-                  </Typography>
-                  <button className="btn btn-primary"
-                    onClick={handleAddArticuloInsumo}
-                  >
-                    + Artículo Insumo
-                  </button>
+                  <Container maxWidth="lg">
+                    <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          my: 1,
+                        }}
+                    >
+                      <Typography variant="h5" gutterBottom>
+                        Artículos de Insumo
+                      </Typography>
+                      <button className="btn btn-primary"
+                              onClick={handleAddArticuloInsumo}
+                      >
+                        + Artículo Insumo
+                      </button>
+                    </Box>
+                    <Box sx={{ mt: 2 }}>
+                      <SearchBar onSearch={onSearch} />
+                    </Box>
+                    <TableComponent
+                        data={filterData}
+                        columns={columns}
+                        handleOpenEditModal={handleOpenEditModal}
+                        handleOpenDeleteModal={handleOpenDeleteModal}
+                    />
+                    <ModalEliminarArticuloInsumo
+                        show={deleteModalOpen}
+                        onHide={handleCloseDeleteModal}
+                        articuloInsumo={articuloToEdit}
+                        //onDelete={handleDelete}
+                    />
+                    <ModalArticuloInsumo
+                        getArticulosInsumo={fetchArticulosInsumo}
+                        articuloToEdit={articuloToEdit !== null ? articuloToEdit : undefined}
+                    />
+                  </Container>
                 </Box>
-                <Box sx={{ mt: 2 }}>
-                  <SearchBar onSearch={onSearch} /> 
-                </Box>
-                <TableComponent
-                  data={filterData}
-                  columns={columns}
-                  handleOpenEditModal={handleOpenEditModal}
-                  handleOpenDeleteModal={handleOpenDeleteModal}
-                />
-                <ModalEliminarArticuloInsumo
-                  show={deleteModalOpen}
-                  onHide={handleCloseDeleteModal}
-                  articuloInsumo={articuloToEdit}
-                //onDelete={handleDelete}
-                />
-                <ModalArticuloInsumo
-                  getArticulosInsumo={fetchArticulosInsumo}
-                  articuloToEdit={articuloToEdit !== null ? articuloToEdit : undefined}
-                />
-              </Container>
-            </Box>
-          </CCol>
-        </CRow>
-      </CContainer>
-    </React.Fragment>
+              </CCol>
+            </CRow>
+          </CContainer>
+        </React.Fragment>
+      </>
+
 
   );
 };

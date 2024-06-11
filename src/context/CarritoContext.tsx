@@ -48,6 +48,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
   // const pedidoDetalleService = new DetallePedidoService();
   const pedidoService = new PedidoService();
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
   const { sucursalId } = useParams();
   const sucursalService = new SucursalShortDtoService();
   const [sucursal, setSucursal] = useState<SucursalShorDto>(); // Inicialización del estado
@@ -60,7 +61,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       if (sucursalId) {
         const sucursal = await sucursalService.get(
           url + "sucursal",
-          sucursalId
+          sucursalId, await getAccessTokenSilently({})
         );
         setSucursal(sucursal);
       }
@@ -99,7 +100,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
         const insumData = await articuloInsumoService.descontarStock(
           url + `articuloInsumo/descontarStock`,
           insumoId,
-          cantidad
+          cantidad, await getAccessTokenSilently({})
         );
 
         if (insumData <= encontradoEnInsumos.stockMinimo) {
@@ -114,7 +115,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
         if (encontradoEnManufacturados) {
           const productData = await productoService.get(
             url + "articuloManufacturado",
-            idArticulo
+            idArticulo, await getAccessTokenSilently({})
           );
           // Iterar sobre cada detalle de articuloManufacturadoDetalles
           for (const detalleProducto of productData.articuloManufacturadoDetalles) {
@@ -128,7 +129,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
               const insumData = await articuloInsumoService.descontarStock(
                 url + `articuloInsumo/descontarStock`,
                 insumoId,
-                cantidadProduct
+                cantidadProduct, await getAccessTokenSilently({})
               );
 
               if (insumData <= stockMinimo) {
@@ -397,7 +398,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       }
       if (isAuthenticated && user && user.email) {
         try {
-          const cliente = await clienteService.getByEmail(url + "cliente", user.email);
+          const cliente = await clienteService.getByEmail(url + "cliente", user.email, await getAccessTokenSilently({}));
           setClient(cliente ?? null);
           if(cliente){
             nuevoPedido.cliente = cliente;
@@ -413,7 +414,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       // console.log(nuevoPedido);
       const respuestaPedido = await pedidoService.post(
         url + "pedido",
-        nuevoPedido
+        nuevoPedido, await getAccessTokenSilently({})
       );
 
       // Guardar los detalles del pedido en el backend

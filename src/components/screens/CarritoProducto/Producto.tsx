@@ -11,12 +11,14 @@ import "./Producto.css";
 import { BaseNavBar } from "../../ui/common/BaseNavBar";
 import IArticuloInsumo from "../../../types/ArticuloInsumoType";
 import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
+import {useAuth0} from "@auth0/auth0-react";
 
 const Producto = () => {
   const [productos, setProductos] = useState<ArticuloDto[]>([]);
   const productoService = new ArticuloManufacturadoService();
   const articuloInsumoService = new ArticuloInsumoService();
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const categoriaService = new CategoriaService();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -62,10 +64,10 @@ const Producto = () => {
   useEffect(() => {
     const fetchData = async () => {
       const productData = await productoService.getAll(
-        url + "articuloManufacturado"
+        url + "articuloManufacturado", await getAccessTokenSilently({})
       );
       const insumData = await articuloInsumoService.getAll(
-        url + "articuloInsumo"
+        url + "articuloInsumo", await getAccessTokenSilently({})
       );
 
       // Filtrar los productos manufacturados y los insumos
@@ -76,7 +78,7 @@ const Producto = () => {
 
       const combinedData = [...productData, ...insumos];
 
-      const categories = await categoriaService.getAll(url + "categoria");
+      const categories = await categoriaService.getAll(url + "categoria", await getAccessTokenSilently({}));
       setCategorias(categories);
 
       const mergedProducts = combinedData.map((value) => ({
