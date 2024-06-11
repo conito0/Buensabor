@@ -13,7 +13,7 @@ import Domicilio from "../../../types/Domicilio";
 import Provincia from "../../../types/Provincia";
 import Localidad from "../../../types/Localidad";
 import { FormaPago } from "../../../types/enums/FormaPago";
-// import DomicilioService from "../../../services/DomicilioService";
+// import { useLocation, useParams } from "react-router-dom";
 
 interface CartItemProps {
   detalle: DetallePedido;
@@ -66,10 +66,23 @@ export const Carrito = () => {
   const provinciaService = new ProvinciaService();
   const paisService = new PaisService();
   const [totalTiempoEspera, setTotalTiempoEspera] = useState<string>('');
+  // const location = useLocation();
 
+  // useEffect(() => {
+  //   // Crear una instancia URLSearchParams con la parte de búsqueda de la URL
+  //   const searchParams = new URLSearchParams(location.search);
+  //   // Verificar si el parámetro específico está presente
+  //   const myParam = searchParams.get('aprovedd');
+    
+  //   if (myParam) {
+  //     console.log(`El parámetro myParam está presente con el valor: ${myParam}`);
+  //     // Realiza cualquier lógica adicional aquí
+  //   } else {
+  //     console.log('El parámetro myParam no está presente en la URL');
+  //   }
+  // }, [location]);
   // const domicilioService = new DomicilioService();
   const url = import.meta.env.VITE_API_URL;
-
   useEffect(() => {
     fetchPaises();
   }, []);
