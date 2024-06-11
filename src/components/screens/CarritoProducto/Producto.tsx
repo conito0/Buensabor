@@ -18,7 +18,6 @@ const Producto = () => {
   const productoService = new ArticuloManufacturadoService();
   const articuloInsumoService = new ArticuloInsumoService();
   const url = import.meta.env.VITE_API_URL;
-  const { getAccessTokenSilently } = useAuth0();
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const categoriaService = new CategoriaService();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -78,7 +77,7 @@ const Producto = () => {
 
       const combinedData = [...productData, ...insumos];
 
-      const categories = await categoriaService.getAll(url + "categoria", await getAccessTokenSilently({}));
+      const categories = await categoriaService.getAll(url + "categoria");
       setCategorias(categories);
 
       const mergedProducts = combinedData.map((value) => ({

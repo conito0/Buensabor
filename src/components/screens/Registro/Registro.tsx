@@ -35,6 +35,7 @@ export const Registro = () => {
     });
 
     const initialValues: Cliente = {
+        id: 0,
         nombre: '',
         apellido: '',
         email: '',
