@@ -22,7 +22,7 @@ interface CartItemProps {
 function CartItem({ detalle }: CartItemProps) {
   const articulo = detalle?.articulo;
   const imagenUrl = articulo?.imagen?.url;
-  
+
   return (
     <div
       className="w-100 cart-item d-flex flex-row align-items-center"
@@ -71,9 +71,20 @@ export const Carrito = () => {
   const provinciaService = new ProvinciaService();
   const paisService = new PaisService();
   const [totalTiempoEspera, setTotalTiempoEspera] = useState<string>('');
-
-  // const domicilioService = new DomicilioService();
+  const [idPedidoUrl, setIdPedidoUrl] = useState<string | undefined>();
+  const [mostrarMensaje, setMostrarMensaje] = useState(false);
   const url = import.meta.env.VITE_API_URL;
+
+  useEffect(() => {
+    // Obtén los parámetros de la URL actual
+    const params = new URLSearchParams(window.location.search);
+
+    // Verifica si el parámetro 'collection_id' está presente
+    const idPedido = params.get('idPedido');
+    if (idPedido) {
+      setIdPedidoUrl(idPedido)
+    }
+  }, []);
 
   useEffect(() => {
     fetchPaises();
@@ -271,15 +282,26 @@ export const Carrito = () => {
   };
   const limpiarCarritoYResetearIdPedido = () => {
     limpiarCarrito();
+    setIdPedidoUrl(undefined);
     setIdPedido(undefined); // Restablecer idPedido a undefined cuando se limpie el carrito
     setPedidoCreado(false);
     setTipoEnvio(null)
     setFormaPago(null)
   };
+
+  useEffect(() => {
+    if (idPedidoUrl !== undefined) {
+      setMostrarMensaje(true);
+      setTimeout(() => {
+        setMostrarMensaje(false);
+        limpiarCarritoYResetearIdPedido();
+      }, 4000); // 4000 milisegundos = 4 segundos
+    }
+  }, [idPedidoUrl]);
+
   useEffect(() => {
     if (cart.length === 0 && idPedido !== undefined) {
       limpiarCarritoYResetearIdPedido();
-      console.log("hola")
     }
   }, [cart, idPedido]);
   
@@ -482,6 +504,11 @@ export const Carrito = () => {
             {pedidoCreado && idPedido !== undefined  && formaPago == FormaPago.EFECTIVO &&(
               <div className="text-success">
                 El pedido con id {idPedido} se guardó correctamente!
+              </div>
+            )}
+           {mostrarMensaje && (
+              <div className="text-success">
+                El pedido con id {idPedidoUrl} se guardó correctamente!
               </div>
             )}
           </>
