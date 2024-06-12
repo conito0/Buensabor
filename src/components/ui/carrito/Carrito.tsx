@@ -20,17 +20,22 @@ interface CartItemProps {
 }
 
 function CartItem({ detalle }: CartItemProps) {
+  const articulo = detalle?.articulo;
+  const imagenUrl = articulo?.imagen?.url;
+  
   return (
     <div
       className="w-100 cart-item d-flex flex-row align-items-center"
       key={detalle.id}
     >
-      <img
-        width={50}
-        height={50}
-        src={`${detalle.articulo.imagen.url}`}
-        alt={detalle.articulo.denominacion}
-      />
+      {imagenUrl && (
+        <img
+          width={50}
+          height={50}
+          src={imagenUrl}
+          alt={detalle.articulo.denominacion}
+        />
+      )}
       <div className={"w-100 text-left"}>
         <div>
           <b className={"text-truncate"}>{detalle.articulo.denominacion}</b>
