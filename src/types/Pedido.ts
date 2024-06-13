@@ -1,6 +1,7 @@
 import Cliente from "./Cliente";
 import DetallePedido from "./DetallePedido";
 import Domicilio from "./Domicilio";
+import Factura from "./Factura";
 import SucursalShorDto from "./dto/SucursalShortDto";
 import { Estado } from "./enums/Estado";
 // import { FormaPago } from "./enums/FormaPago";
@@ -18,6 +19,7 @@ export default class Pedido {
   fechaPedido: Date = new Date();
   detallePedidos: DetallePedido[] = [];
   sucursal: SucursalShorDto;
+  factura?: Factura | null;
   cliente: Cliente; 
   domicilio?: Domicilio | null;
   constructor() {
