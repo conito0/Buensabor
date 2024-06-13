@@ -54,7 +54,6 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
   const { isAuthenticated, user } = useAuth0();
   const clienteService = new ClientService();
   const [client, setClient] = useState<Cliente | null>(null);
-  console.log(client) // solo para que no de error
   const fetchSucursalData = async () => {
     try {
       if (sucursalId) {
@@ -62,6 +61,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
           url + "sucursal",
           sucursalId
         );
+        console.log(sucursal)
         setSucursal(sucursal);
       }
     } catch (error) {
@@ -372,10 +372,6 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       const nuevoPedido = new Pedido();
       nuevoPedido.fechaPedido = fechaActual;
       nuevoPedido.total = totalPedido;
-
-      console.log('Total con descuento (si aplica):', total);
-
-      console.log('Total con descuento (si aplica):', total);
       nuevoPedido.detallePedidos = detallesConPedido;
       nuevoPedido.horaEstimadaFinalizacion = `${tiempoEstimado}`;
       if (sucursal) {
@@ -409,8 +405,11 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       }
 
       nuevoPedido.tipoEnvio = tipoEnvio;
+      nuevoPedido.factura = null;
+      
       // Guardar el pedido en el backend  
-      // console.log(nuevoPedido);
+      console.log(nuevoPedido);
+      console.log(nuevoPedido.factura);
       const respuestaPedido = await pedidoService.post(
         url + "pedido",
         nuevoPedido

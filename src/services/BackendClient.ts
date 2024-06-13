@@ -6,18 +6,25 @@ import { AbstractBackendClient } from "./AbstractBackendClient";
 // Clase abstracta que proporciona métodos genéricos para interactuar con una API
 export default abstract class BackendClient<T> extends AbstractBackendClient<T> {
   // Método protegido para realizar una solicitud genérica
-  protected async request(path: string, options: RequestInit): Promise<T> {
+  protected async request<T>(path: string, options: RequestInit): Promise<T> {
     try {
       // Realiza una solicitud fetch con la ruta y las opciones proporcionadas
       const response = await fetch(path, options);
+
       // Verifica si la respuesta es exitosa
       if (!response.ok) {
         console.log(response.statusText);
         // Si no es exitosa, lanza un error con el mensaje de estado de la respuesta
         throw new Error(response.statusText);
       }
-      // Retorna los datos de la respuesta en formato JSON
-      return response.json();
+
+      // Intenta obtener el cuerpo de la respuesta como texto
+      const text = await response.text();
+      // Si el texto está vacío, retorna un objeto vacío
+      if (!text) return {} as T;
+
+      // Intenta convertir el texto en JSON y retornarlo
+      return JSON.parse(text);
     } catch (error) {
       // Si hay algún error, rechaza la promesa con el error
       return Promise.reject(error);
@@ -145,9 +152,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
     try {
       const response = await fetch(urlServer, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json"},
         body: JSON.stringify(pedido),
       });
       if (!response.ok) {

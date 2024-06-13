@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Container } from "@mui/material";
+import { Box, Typography, Container, IconButton } from "@mui/material";
 import { useAppDispatch } from "../../../hooks/redux";
 import TableComponent from "../../ui/Table/Table.tsx";
 import { CCol, CContainer, CRow } from "@coreui/react";
@@ -13,6 +13,9 @@ import { Estado } from "../../../types/enums/Estado.ts";
 import { Button } from "react-bootstrap";
 import Cliente from "../../../types/Cliente.ts";
 import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
+import ModalInsumo from "../../ui/Modal/DetallePedido.tsx";
+import ModalEliminarPedido from "../../ui/Modal/EliminarPedido.tsx";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface Row {
   [key: string]: any;
@@ -31,6 +34,38 @@ export const ListaPedidos = () => {
   const { isAuthenticated, user,isLoading } = useAuth0();
   const clienteService = new ClientService();
   const [originalData, setOriginalData] = useState<Row[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [currentDetallePedidos, setCurrentDetallePedidos] = useState([]);
+  const [orderDate, setOrderDate] = useState("");
+  const [showModalEliminar, setShowModalEliminar] = useState(false);
+  const [selectedPedido, setSelectedPedido] = useState(null)
+
+
+  const handleShow = (detallePedidos: any, fechaPedido:any) => {
+    setCurrentDetallePedidos(detallePedidos);
+    setOrderDate(new Date(fechaPedido).toLocaleDateString());
+    setShowModal(true);
+  };
+
+  const handleClose = () => {
+    setShowModal(false);
+    setCurrentDetallePedidos([]);
+    setOrderDate("");
+    window.location.reload();
+  };
+
+  const handleShowEliminar = (pedido: any) => {
+    setSelectedPedido(pedido);
+    setShowModalEliminar(true);
+    setOrderDate(new Date(pedido.fechaPedido).toLocaleDateString());
+  };
+
+  const handleHideEliminar = () => {
+    setSelectedPedido(null);
+    setShowModalEliminar(false);
+    setOrderDate("");
+    window.location.reload();
+  };
 
   const traerPedidos = async (cliente: Cliente) => {
     if (cliente) {
@@ -97,12 +132,12 @@ export const ListaPedidos = () => {
 
   const handleDownloadFactura = (rowData: any) => {
     const pedidoId = rowData.id;
-    const url = `http://localhost:8080/factura/${pedidoId}`;
+    const url = `http://localhost:8080/pedido/downloadPdf/${pedidoId}`;
     window.open(url);
   };
 
   const isDownloadEnabled = (rowData: any) => {
-    return rowData.estado === Estado.CANCELADO;
+    return rowData.estado === Estado.FACTURADO;
   };
 
   const columns: Column[] = [
@@ -143,19 +178,13 @@ export const ListaPedidos = () => {
       label: "Detalle del Pedido",
       renderCell: (rowData) => (
         <div>
-          {rowData.detallePedidos.map((detalle: any, index: number) => (
-            <div key={index}>
-              <p>Cantidad: {detalle.cantidad}</p>
-              <p>Artículo: {detalle.articulo.denominacion}</p>
-            </div>
-          ))}
+          <Button onClick={() => handleShow(rowData.detallePedidos, rowData.fechaPedido)}>Ver</Button>
         </div>
       ),
     },
-
     {
-      id: "actions",
-      label: "Acciones",
+      id: "factura",
+      label: "Factura",
       renderCell: (rowData) => (
         <Button
           className="btn btn-primary"
@@ -165,6 +194,17 @@ export const ListaPedidos = () => {
         >
           Descargar
         </Button>
+      ),
+    },
+    {
+      id: "actions",
+      label: "Accion",
+      renderCell: (rowData) => (
+        <IconButton aria-label="eliminar"   
+          disabled={!isDownloadEnabled(rowData)}
+          onClick={() => handleShowEliminar(rowData)}>
+          <DeleteIcon />
+        </IconButton>
       ),
     },
   ];
@@ -220,6 +260,20 @@ export const ListaPedidos = () => {
                   <SearchBar onSearch={onSearch} />
                 </Box>
                 <TableComponent data={filteredData} columns={columns} />
+                <ModalInsumo
+                  show={showModal}
+                  handleClose={handleClose}
+                  detallePedidos={currentDetallePedidos}
+                  orderDate={orderDate}
+                />
+                {selectedPedido && (
+                  <ModalEliminarPedido
+                    show={showModalEliminar}
+                    onHide={handleHideEliminar}
+                    pedido={selectedPedido}
+                    orderDate={orderDate}
+                  />
+                )}
               </Container>
             </Box>
           </CCol>

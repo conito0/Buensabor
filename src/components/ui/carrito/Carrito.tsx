@@ -73,14 +73,14 @@ export const Carrito = () => {
   const [totalTiempoEspera, setTotalTiempoEspera] = useState<string>('');
   const [idPedidoUrl, setIdPedidoUrl] = useState<string | undefined>();
   const [mostrarMensaje, setMostrarMensaje] = useState(false);
+  const [mostrarIdPedido, setMostrarIdPedido] = useState(false);
+
   const url = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     // Obtén los parámetros de la URL actual
     const params = new URLSearchParams(window.location.search);
-
-    // Verifica si el parámetro 'collection_id' está presente
-    const idPedido = params.get('idPedido');
+    const idPedido = params.get('i');
     if (idPedido) {
       setIdPedidoUrl(idPedido)
     }
@@ -300,6 +300,16 @@ export const Carrito = () => {
   }, [idPedidoUrl]);
 
   useEffect(() => {
+    if (pedidoCreado && idPedido !== undefined && formaPago === FormaPago.EFECTIVO) {
+      setMostrarIdPedido(true);
+      setTimeout(() => {
+        setMostrarIdPedido(false);
+        limpiarCarritoYResetearIdPedido();
+      }, 4000); // 5000 milisegundos = 5 segundos
+    }
+  }, [pedidoCreado, idPedido, formaPago]);
+  
+  useEffect(() => {
     if (cart.length === 0 && idPedido !== undefined) {
       limpiarCarritoYResetearIdPedido();
     }
@@ -355,10 +365,10 @@ export const Carrito = () => {
             ))}
             <div>
               <h3>${totalProductos}</h3>
-              {tipoEnvio === TipoEnvio.TAKEAWAY && (
+              {tipoEnvio === TipoEnvio.TAKEAWAY && mostrarMensaje && idPedido && (
                 <p className="text-success">Se ha aplicado un descuento del 10%.</p>
               )}
-              {totalTiempoEspera && (
+              {totalTiempoEspera && mostrarMensaje &&  idPedido &&(
                 <p className="text-success">
                   {tipoEnvio === TipoEnvio.DELIVERY
                     ? `Tiempo estimado de entrega: ${totalTiempoEspera}`
@@ -500,8 +510,8 @@ export const Carrito = () => {
                 </button>
               </>
             )}
-            {idPedido && formaPago == FormaPago.MERCADOPAGO  &&<CheckoutMP idPedido={idPedido} />}
-            {pedidoCreado && idPedido !== undefined  && formaPago == FormaPago.EFECTIVO &&(
+            {idPedido && formaPago == FormaPago.MERCADOPAGO  &&<CheckoutMP idPedido={idPedido} iniciarProcesoAutomaticamente={true}/>}
+            {mostrarIdPedido &&(
               <div className="text-success">
                 El pedido con id {idPedido} se guardó correctamente!
               </div>
