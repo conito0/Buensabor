@@ -37,14 +37,14 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
 
   return (
     <Modal
-      id={"modal"}
+      id="modal"
       show={show}
       onHide={handleClose}
-      size={"lg"}
+      size="lg"
       backdrop="static"
       keyboard={false}
       centered
-      style={{ boxShadow: "0 0 20px rgba(0, 0, 2, 0.5)" }}
+      style={{ boxShadow: '0 0 20px rgba(0, 0, 2, 0.5)' }}
     >
       <Modal.Header closeButton>
         <Modal.Title>Detalles del Pedido - {orderDate}</Modal.Title>
@@ -63,7 +63,7 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
               <tr key={index}>
                 <td>{detalle.articulo.denominacion}</td>
                 <td>{detalle.cantidad}</td>
-                <td>{detalle.subTotal}</td> {/* Assuming articulo has a 'precio' field */}
+                <td>{detalle.subTotal}</td>
               </tr>
             ))}
           </tbody>
