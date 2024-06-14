@@ -75,25 +75,27 @@ export const Registro = () => {
             }}
         >
             {() => (
-                <div style={{width: '100%'}} className={"d-flex justify-content-center align-items-center m-5"}>
-                    <Form style={{width: '700px'}} autoComplete="off">
-                        <div style={{width: '700px'}} className="mb-4">
-                            <label htmlFor="nombre">Nombre:</label>
+                <div className={"d-flex flex-column justify-content-center align-items-center m-3"}>
+                    <Form style={{backgroundColor: "white", padding: "16px", borderRadius: "10px"}} autoComplete="off">
+                        <h2>Registro</h2>
+                        <br></br>
+                        <div className="mb-4">
+                            <label htmlFor="nombre">Nombre</label>
                             <Field name="nombre" type="text" className="form-control mt-2"/>
                             <ErrorMessage name="nombre" className="error-message" component="div"/>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="apellido">Apellido:</label>
+                            <label htmlFor="apellido">Apellido</label>
                             <Field name="apellido" type="text" className="form-control mt-2"/>
                             <ErrorMessage name="apellido" className="error-message" component="div"/>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="email">Email:</label>
+                            <label htmlFor="email">Email</label>
                             <Field name="email" type="text" className="form-control mt-2"/>
                             <ErrorMessage name="email" className="error-message" component="div"/>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="telefono">Telefono:</label>
+                            <label htmlFor="telefono">Telefono</label>
                             <Field name="telefono" type="text" className="form-control mt-2"/>
                             <ErrorMessage name="telefono" className="error-message" component="div"/>
                         </div>
@@ -101,7 +103,7 @@ export const Registro = () => {
                             <Button variant={"link"} onClick={() => loginWithRedirect()} className="btn btn-link">
                                 Ya estoy registrado
                             </Button>
-                            <Button variant="outline-success" type="submit" className="custom-button">
+                            <Button variant="success" type="submit" className="custom-button">
                                 Continuar con google / email
                             </Button>
                         </div>
