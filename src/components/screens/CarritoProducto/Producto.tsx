@@ -76,7 +76,7 @@ const Producto = () => {
 
       const combinedData = [...productData, ...insumos];
 
-      const categories = await categoriaService.getAll(url + "categoria");
+      const categories = combinedData.map((value) => value.categoria);
       setCategorias(categories);
 
       const mergedProducts = combinedData.map((value) => ({
@@ -101,7 +101,9 @@ const Producto = () => {
   const handleCategoryFilter = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
+    console.log(event)
     const selectedValue = event.target.value;
+    console.log(selectedValue)
     setSelectedCategory(selectedValue ? parseInt(selectedValue) : null);
   };
 
