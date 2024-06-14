@@ -6,19 +6,19 @@ import { CarritoContextProvider} from "../../../context/CarritoContext";
 import { Carrito } from "../../ui/carrito/Carrito";
 import ArticuloInsumoService from "../../../services/ArticuloInsumoService";
 import Categoria from "../../../types/Categoria";
-import CategoriaService from "../../../services/CategoriaService";
 import "./Producto.css";
 import { BaseNavBar } from "../../ui/common/BaseNavBar";
 import IArticuloInsumo from "../../../types/ArticuloInsumoType";
 import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
+import { useParams } from "react-router-dom";
 
 const Producto = () => {
   const [productos, setProductos] = useState<ArticuloDto[]>([]);
   const productoService = new ArticuloManufacturadoService();
   const articuloInsumoService = new ArticuloInsumoService();
+  const {sucursalId} = useParams();
   const url = import.meta.env.VITE_API_URL;
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const categoriaService = new CategoriaService();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [articuloInsumo, setArticuloInsumo] = useState<IArticuloInsumo[]>([]);
   const [articuloManufacturado, setArticuloManufacturado] = useState<
@@ -61,39 +61,43 @@ const Producto = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const productData = await productoService.getAll(
-        url + "articuloManufacturado"
-      );
-      const insumData = await articuloInsumoService.getAll(
-        url + "articuloInsumo"
-      );
+      if(sucursalId){
+        const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
 
-      // Filtrar los productos manufacturados y los insumos
-      const insumos = insumData.filter((insumo) => !insumo.esParaElaborar);
-      setArticuloManufacturado(productData);
-      setArticuloInsumo(insumos);
-      // Combinar los productos manufacturados y los insumos en un solo array
-
-      const combinedData = [...productData, ...insumos];
-
-      const categories = combinedData.map((value) => value.categoria);
-      setCategorias(categories);
-
-      const mergedProducts = combinedData.map((value) => ({
-        id: value.id,
-        categoria: value.categoria,
-        denominacion: value.denominacion,
-        precioVenta: value.precioVenta,
-        eliminado: value.eliminado,
-        imagen: value.imagenes[0] || undefined,
-        precioCompra: 0,
-        stockActual: 0,
-        stockMaximo: 0,
-        tiempoEstimadoMinutos: value.tiempoEstimadoMinutos || 0,
-        unidadMedida: value.unidadMedida,
-      }));
-
-      setProductos(mergedProducts);
+        const productData = await productoService.manufacturados(
+          url, sucursalIdNumber
+        );
+        const insumData = await articuloInsumoService.insumos(
+          url, sucursalIdNumber
+        );
+  
+        // Filtrar los productos manufacturados y los insumos
+        const insumos = insumData.filter((insumo) => !insumo.esParaElaborar);
+        setArticuloManufacturado(productData);
+        setArticuloInsumo(insumos);
+        // Combinar los productos manufacturados y los insumos en un solo array
+  
+        const combinedData = [...productData, ...insumos];
+  
+        const categories = combinedData.map((value) => value.categoria);
+        setCategorias(categories);
+  
+        const mergedProducts = combinedData.map((value) => ({
+          id: value.id,
+          categoria: value.categoria,
+          denominacion: value.denominacion,
+          precioVenta: value.precioVenta,
+          eliminado: value.eliminado,
+          imagen: value.imagenes[0] || undefined,
+          precioCompra: 0,
+          stockActual: 0,
+          stockMaximo: 0,
+          tiempoEstimadoMinutos: value.tiempoEstimadoMinutos || 0,
+          unidadMedida: value.unidadMedida,
+        }));
+  
+        setProductos(mergedProducts);
+      }
     };
     fetchData();
   }, []);
@@ -118,27 +122,27 @@ const Producto = () => {
     ));
   }
 
-  if (!estaEnHorarioDeAtencion(new Date())) {
-    return (
-      <>
-        <BaseNavBar />
-        <div
-          style={{ height: "calc(100vh - 56px)" }}
-          className={
-            "d-flex p-5 text-center flex-column justify-content-center align-items-center w-100"
-          }
-        >
-          <div className={"h1"}>
-            <b>El local se encuentra cerrado en este momento</b>
-          </div>
-          <div>
-            Horario: Lunes a domingos de 20:00 a 12:00, y de sábados y domingos
-            de 11:00 a 15:00.
-          </div>
-        </div>
-      </>
-    );
-  }
+  // if (!estaEnHorarioDeAtencion(new Date())) {
+  //   return (
+  //     <>
+  //       <BaseNavBar />
+  //       <div
+  //         style={{ height: "calc(100vh - 56px)" }}
+  //         className={
+  //           "d-flex p-5 text-center flex-column justify-content-center align-items-center w-100"
+  //         }
+  //       >
+  //         <div className={"h1"}>
+  //           <b>El local se encuentra cerrado en este momento</b>
+  //         </div>
+  //         <div>
+  //           Horario: Lunes a domingos de 20:00 a 12:00, y de sábados y domingos
+  //           de 11:00 a 15:00.
+  //         </div>
+  //       </div>
+  //     </>
+  //   );
+  // }
 
   if (productos.length === 0) {
     return (

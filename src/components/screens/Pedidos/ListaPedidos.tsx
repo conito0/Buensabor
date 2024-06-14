@@ -32,7 +32,6 @@ export const ListaPedidos = () => {
   const [filteredData, setFilterData] = useState<Row[]>([]);
   const { sucursalId } = useParams();
   const { isAuthenticated, user,isLoading } = useAuth0();
-  const [ isLoadingPedidos, setIsLoadingPedidos ] = useState<boolean>(false);
   const clienteService = new ClientService();
   const [originalData, setOriginalData] = useState<Row[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -70,13 +69,11 @@ export const ListaPedidos = () => {
 
   const traerPedidos = async (cliente: Cliente) => {
     if (cliente) {
-      setIsLoadingPedidos(true);
       pedidoService.pedidosCliente(url, cliente.id).then((pedidosCliente) => {
         dispatch(setPedido(pedidosCliente));
         setFilterData(pedidosCliente);
         setOriginalData(pedidosCliente);
-        setIsLoadingPedidos(false);
-      }).catch(e => { console.log(e); setIsLoadingPedidos(false);});
+      }).catch(e => { console.log(e)});
     }
   };
   const fetchData = async () => {
@@ -211,31 +208,18 @@ export const ListaPedidos = () => {
       ),
     },
   ];
-
-  if(isLoadingPedidos || isLoading) {
-    return <>
-    <BaseNavBar></BaseNavBar>
-      <div style={{height: "calc(100vh - 88px)"}}
-                  className="d-flex flex-column justify-content-center align-items-center">
-          <div className="spinner-border" role="status"></div>
-          <div>Cargando los pedidos</div>
-      </div>
-    </>
-  }
-
-  if (!isAuthenticated) {
-    return (
-        <>
-        <BaseNavBar></BaseNavBar>
-          <div style={{height: "calc(100vh - 56px)"}} className={"d-flex flex-column justify-content-center align-items-center w-100"}>
-            <div>
-            </div>
-            <h3>Debes loguearte para ver poder tus pedidos</h3>
-          </div>
-        </>
-    );
-  }
-
+  // if (!isAuthenticated  && !isLoading) {
+  //   return (
+  //       <>
+  //       <BaseNavBar></BaseNavBar>
+  //         <div style={{height: "calc(100vh - 56px)"}} className={"d-flex flex-column justify-content-center align-items-center w-100"}>
+  //           <div>
+  //           </div>
+  //           <h3>Debes loguearte para ver poder tus pedidos</h3>
+  //         </div>
+  //       </>
+  //   );
+  // }
   return (
     <React.Fragment>
       <BaseNavBar></BaseNavBar>
@@ -265,6 +249,12 @@ export const ListaPedidos = () => {
                   <Typography variant="h5" gutterBottom>
                     Mis Pedidos
                   </Typography>
+                  <a
+                    className="btn btn-primary"
+                    href={`../productos/${sucursalId}`}
+                  >
+                    + Pedido
+                  </a>
                 </Box>
                 <Box sx={{ mt: 2 }}>
                   <SearchBar onSearch={onSearch} />

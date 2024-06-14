@@ -1,6 +1,6 @@
 
 import {useAuth0} from "@auth0/auth0-react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
 export const BaseNavBar = () => {
 
@@ -13,7 +13,7 @@ export const BaseNavBar = () => {
   const handleLogout = () => {
     logout({
       logoutParams: {
-        returnTo: "http://localhost:5173/carrito/1"
+        returnTo: `http://localhost:5173/`
       }
     })
   }
