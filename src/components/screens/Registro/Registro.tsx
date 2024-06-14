@@ -12,17 +12,21 @@ export const Registro = () => {
     const url = import.meta.env.VITE_API_URL;
     const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
 
+
+    if(isLoading) {
+        return <>
+            <BaseNavBar></BaseNavBar>
+            <div style={{height: "calc(100vh - 88px)"}}
+                        className="d-flex flex-column justify-content-center align-items-center">
+                <div className="spinner-border" role="status"></div>
+            </div>
+        </>
+    }
+    
     if (isAuthenticated) {
         return <div style={{height: "calc(100vh - 88px)"}} className="d-flex flex-column justify-content-center align-items-center">
             <h1>Ya estas registrado!</h1>
             <p>Ya podes disfrutar de nuestro catalogo.</p>
-        </div>
-    }
-
-    if(isLoading) {
-        return <div style={{height: "calc(100vh - 88px)"}}
-                    className="d-flex flex-column justify-content-center align-items-center">
-            <div className="spinner-border" role="status"></div>
         </div>
     }
 

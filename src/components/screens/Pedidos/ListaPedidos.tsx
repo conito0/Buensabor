@@ -208,6 +208,17 @@ export const ListaPedidos = () => {
       ),
     },
   ];
+
+  if(isLoading) {
+    return <>
+    <BaseNavBar></BaseNavBar>
+      <div style={{height: "calc(100vh - 88px)"}}
+                  className="d-flex flex-column justify-content-center align-items-center">
+          <div className="spinner-border" role="status"></div>
+      </div>
+    </>
+  }
+
   if (!isAuthenticated) {
     return (
         <>
@@ -220,6 +231,7 @@ export const ListaPedidos = () => {
         </>
     );
   }
+
   return (
     <React.Fragment>
       <BaseNavBar></BaseNavBar>
@@ -249,12 +261,6 @@ export const ListaPedidos = () => {
                   <Typography variant="h5" gutterBottom>
                     Mis Pedidos
                   </Typography>
-                  <a
-                    className="btn btn-primary"
-                    href={`../productos/${sucursalId}`}
-                  >
-                    + Pedido
-                  </a>
                 </Box>
                 <Box sx={{ mt: 2 }}>
                   <SearchBar onSearch={onSearch} />
