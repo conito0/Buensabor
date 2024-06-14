@@ -47,7 +47,7 @@ const Producto = () => {
       }
     };
 
-    const horarioLunesADomingo = estaDentroRango(19, 0, 0, 0);
+    const horarioLunesADomingo = estaDentroRango(20, 0, 0, 0);
     const horarioSabadoDomingo = estaDentroRango(11, 0, 15, 0);
 
     const esFinDeSemana = diaSemana === 6 || diaSemana === 0;
