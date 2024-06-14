@@ -46,7 +46,7 @@ export const BaseNavBar = () => {
                 Productos
               </a>
             </li>
-            <li className="nav-item">
+            {user && isAuthenticated && <li className="nav-item">
               <a
                 className="nav-link active text-white"
                 aria-current="page"
@@ -54,7 +54,7 @@ export const BaseNavBar = () => {
               >
                 Mis Pedidos
               </a>
-            </li>
+            </li>}
           </ul>
         </div>
         <form className="d-flex align-items-center text-white" role="search">

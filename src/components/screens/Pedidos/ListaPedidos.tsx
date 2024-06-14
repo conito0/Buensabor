@@ -32,6 +32,7 @@ export const ListaPedidos = () => {
   const [filteredData, setFilterData] = useState<Row[]>([]);
   const { sucursalId } = useParams();
   const { isAuthenticated, user,isLoading } = useAuth0();
+  const [ isLoadingPedidos, setIsLoadingPedidos ] = useState<boolean>(false);
   const clienteService = new ClientService();
   const [originalData, setOriginalData] = useState<Row[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -69,11 +70,13 @@ export const ListaPedidos = () => {
 
   const traerPedidos = async (cliente: Cliente) => {
     if (cliente) {
+      setIsLoadingPedidos(true);
       pedidoService.pedidosCliente(url, cliente.id).then((pedidosCliente) => {
         dispatch(setPedido(pedidosCliente));
         setFilterData(pedidosCliente);
         setOriginalData(pedidosCliente);
-      }).catch(e => { console.log(e)});
+        setIsLoadingPedidos(false);
+      }).catch(e => { console.log(e); setIsLoadingPedidos(false);});
     }
   };
   const fetchData = async () => {
@@ -209,12 +212,13 @@ export const ListaPedidos = () => {
     },
   ];
 
-  if(isLoading) {
+  if(isLoadingPedidos || isLoading) {
     return <>
     <BaseNavBar></BaseNavBar>
       <div style={{height: "calc(100vh - 88px)"}}
                   className="d-flex flex-column justify-content-center align-items-center">
           <div className="spinner-border" role="status"></div>
+          <div>Cargando los pedidos</div>
       </div>
     </>
   }

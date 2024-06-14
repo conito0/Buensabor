@@ -276,6 +276,7 @@ export const Carrito = () => {
             setFormaPago(forma)
         }
       }
+      setTimeout(() => {}, 10000)
     } catch (error) {
       console.error('Error al generar el pedido:', error);
     }
@@ -365,7 +366,7 @@ export const Carrito = () => {
             ))}
             <div>
               <h3>${totalProductos}</h3>
-              {tipoEnvio === TipoEnvio.TAKEAWAY && mostrarMensaje && idPedido && (
+              {tipoEnvio === TipoEnvio.TAKEAWAY && (
                 <p className="text-success">Se ha aplicado un descuento del 10%.</p>
               )}
               {totalTiempoEspera && mostrarMensaje &&  idPedido &&(
