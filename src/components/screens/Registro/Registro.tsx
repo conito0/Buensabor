@@ -24,10 +24,13 @@ export const Registro = () => {
     }
     
     if (isAuthenticated) {
-        return <div style={{height: "calc(100vh - 88px)"}} className="d-flex flex-column justify-content-center align-items-center">
+        return <>
+        <BaseNavBar></BaseNavBar>
+        <div style={{height: "calc(100vh - 88px)"}} className="d-flex flex-column justify-content-center align-items-center">
             <h1>Ya estas registrado!</h1>
             <p>Ya podes disfrutar de nuestro catalogo.</p>
         </div>
+        </>
     }
 
     // Definir las reglas de validación para el formulario usando Yup

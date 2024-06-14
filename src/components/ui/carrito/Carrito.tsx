@@ -22,7 +22,7 @@ interface CartItemProps {
 function CartItem({ detalle }: CartItemProps) {
   const articulo = detalle?.articulo;
   const imagenUrl = articulo?.imagen?.url;
-
+  
   return (
     <div
       className="w-100 cart-item d-flex flex-row align-items-center"

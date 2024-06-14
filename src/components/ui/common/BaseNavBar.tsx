@@ -1,6 +1,6 @@
 
 import {useAuth0} from "@auth0/auth0-react";
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 export const BaseNavBar = () => {
 
@@ -21,7 +21,7 @@ export const BaseNavBar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-primary">
       <div className="container-fluid ms-3">
-        <a className="navbar-brand text-white">
+        <a className="navbar-brand text-white" href="/inicio/1">
           Buen Sabor
         </a>
         <button

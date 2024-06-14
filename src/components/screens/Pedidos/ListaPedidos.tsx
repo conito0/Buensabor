@@ -208,18 +208,18 @@ export const ListaPedidos = () => {
       ),
     },
   ];
-  // if (!isAuthenticated  && !isLoading) {
-  //   return (
-  //       <>
-  //       <BaseNavBar></BaseNavBar>
-  //         <div style={{height: "calc(100vh - 56px)"}} className={"d-flex flex-column justify-content-center align-items-center w-100"}>
-  //           <div>
-  //           </div>
-  //           <h3>Debes loguearte para ver poder tus pedidos</h3>
-  //         </div>
-  //       </>
-  //   );
-  // }
+  if (!isAuthenticated  && !isLoading) {
+    return (
+        <>
+        <BaseNavBar></BaseNavBar>
+          <div style={{height: "calc(100vh - 56px)"}} className={"d-flex flex-column justify-content-center align-items-center w-100"}>
+            <div>
+            </div>
+            <h3>Debes loguearte para ver poder tus pedidos</h3>
+          </div>
+        </>
+    );
+  }
   return (
     <React.Fragment>
       <BaseNavBar></BaseNavBar>
@@ -251,7 +251,7 @@ export const ListaPedidos = () => {
                   </Typography>
                   <a
                     className="btn btn-primary"
-                    href={`../productos/${sucursalId}`}
+                    href={`../carrito/${sucursalId}`}
                   >
                     + Pedido
                   </a>

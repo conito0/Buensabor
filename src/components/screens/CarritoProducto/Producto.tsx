@@ -11,6 +11,7 @@ import { BaseNavBar } from "../../ui/common/BaseNavBar";
 import IArticuloInsumo from "../../../types/ArticuloInsumoType";
 import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
 import { useParams } from "react-router-dom";
+import CategoriaService from "../../../services/CategoriaService";
 
 const Producto = () => {
   const [productos, setProductos] = useState<ArticuloDto[]>([]);
@@ -24,6 +25,7 @@ const Producto = () => {
   const [articuloManufacturado, setArticuloManufacturado] = useState<
     IArticuloManufacturado[]
   >([]);
+  const categoriaService = new CategoriaService();
 
   const estaEnHorarioDeAtencion = (date: Date) => {
     const diaSemana = date.getDay();
@@ -47,7 +49,7 @@ const Producto = () => {
       }
     };
 
-    const horarioLunesADomingo = estaDentroRango(20, 0, 0, 0);
+    const horarioLunesADomingo = estaDentroRango(8, 0, 0, 0);
     const horarioSabadoDomingo = estaDentroRango(11, 0, 15, 0);
 
     const esFinDeSemana = diaSemana === 6 || diaSemana === 0;
@@ -78,10 +80,10 @@ const Producto = () => {
         // Combinar los productos manufacturados y los insumos en un solo array
   
         const combinedData = [...productData, ...insumos];
-  
-        const categories = combinedData.map((value) => value.categoria);
-        setCategorias(categories);
-  
+
+        const categories = await categoriaService.categoriaSucursal(url, sucursalIdNumber);
+        setCategorias(categories)
+
         const mergedProducts = combinedData.map((value) => ({
           id: value.id,
           categoria: value.categoria,
@@ -122,28 +124,27 @@ const Producto = () => {
     ));
   }
 
-  // if (!estaEnHorarioDeAtencion(new Date())) {
-  //   return (
-  //     <>
-  //       <BaseNavBar />
-  //       <div
-  //         style={{ height: "calc(100vh - 56px)" }}
-  //         className={
-  //           "d-flex p-5 text-center flex-column justify-content-center align-items-center w-100"
-  //         }
-  //       >
-  //         <div className={"h1"}>
-  //           <b>El local se encuentra cerrado en este momento</b>
-  //         </div>
-  //         <div>
-  //           Horario: Lunes a domingos de 20:00 a 12:00, y de sábados y domingos
-  //           de 11:00 a 15:00.
-  //         </div>
-  //       </div>
-  //     </>
-  //   );
-  // }
-
+  if (!estaEnHorarioDeAtencion(new Date())) {
+    return (
+      <>
+        <BaseNavBar />
+        <div
+          style={{ height: "calc(100vh - 56px)" }}
+          className={
+            "d-flex p-5 text-center flex-column justify-content-center align-items-center w-100"
+          }
+        >
+          <div className={"h1"}>
+            <b>El local se encuentra cerrado en este momento</b>
+          </div>
+          <div>
+            Horario: Lunes a domingos de 20:00 a 12:00, y de sábados y domingos
+            de 11:00 a 15:00.
+          </div>
+        </div>
+      </>
+    );
+  }
   if (productos.length === 0) {
     return (
       <>
