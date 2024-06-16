@@ -56,7 +56,7 @@ function CheckoutMP({ idPedido = 0, iniciarProcesoAutomaticamente = false }) {
       {mostrarPagoMP && idPreference && (
         <div className="divVisible">
           <Wallet
-            initialization={{ preferenceId: idPreference, redirectMode: "blank" }}
+            initialization={{ preferenceId: idPreference }}
             customization={{ texts: { valueProp: 'smart_option' } }}
           />
         </div>

@@ -13,7 +13,7 @@ export const BaseNavBar = () => {
   const handleLogout = () => {
     logout({
       logoutParams: {
-        returnTo: "http://localhost:5173/carrito/1"
+        returnTo: `http://localhost:5174/`
       }
     })
   }
@@ -21,7 +21,7 @@ export const BaseNavBar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-primary">
       <div className="container-fluid ms-3">
-        <a className="navbar-brand text-white">
+        <a className="navbar-brand text-white" href="/inicio/1">
           Buen Sabor
         </a>
         <button
@@ -59,7 +59,7 @@ export const BaseNavBar = () => {
         </div>
         <form className="d-flex align-items-center text-white" role="search">
           { isAuthenticated ? <div className={"px-2"}><img alt={"Imagen de perfil"} className={"rounded-4"} height={20} width={20} src={user?.picture}/><span> {user?.name}</span></div> : <></> }
-          <button hidden={isAuthenticated} onClick={handleLogin} type="button" className={"btn btn-light"}>Registro / Login</button>
+          <button hidden={isAuthenticated} onClick={handleLogin} type="button" className={"btn btn-light"}>Registrarse</button>
           <button hidden={!isAuthenticated}  onClick={handleLogout} type="button" className={"btn btn-light"}>Logout</button>
         </form>
       </div>

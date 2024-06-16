@@ -2,9 +2,10 @@ import { useState } from 'react';
 import {BaseNavBar} from "../../ui/common/BaseNavBar.tsx";
 
 const images = [
-  'img1.jpeg',
+  'img1.jpg',
   'img2.jpeg',
-  'img3.jpg'
+  'img3.jpg',
+  'img4.jpg'
 ];
 
 export const Inicio = () => {
@@ -42,9 +43,16 @@ export const Inicio = () => {
         </div>
         <div className='col-md-12'>
           <p className='text-center h5 m-3 mb-5'>
-            Musical Hendrix es una tienda de instrumentos musicales con ya más de 15 años de
-            experiencia. Tenemos el conocimiento y la capacidad como para informarte acerca de las
-            mejores elecciones para tu compra musical.
+            Restaurante El Buen Sabor
+          </p>
+          <p className='text-center m-3 mb-5'>
+            Ubicado en el corazón de la ciudad, El Buen Sabor es el destino perfecto para los amantes de la gastronomía que buscan una experiencia culinaria auténtica y memorable. Con una decoración acogedora y moderna, nuestro restaurante ofrece un ambiente cálido y familiar donde cada detalle ha sido cuidadosamente pensado para brindarte el máximo confort.
+          </p>
+          <p className='text-center m-3 mb-5'>
+            <strong>Nuestra Cocina</strong>
+          </p>
+          <p className='text-center m-3 mb-5'>
+            En El Buen Sabor, nos especializamos en una fusión de cocina tradicional y contemporánea, utilizando ingredientes frescos y de la más alta calidad. Nuestro menú, diseñado por chefs expertos, incluye una variedad de platos que van desde suculentos asados y mariscos frescos hasta opciones vegetarianas innovadoras y saludables.
           </p>
         </div>
         <hr />

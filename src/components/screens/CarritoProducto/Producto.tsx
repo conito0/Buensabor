@@ -6,24 +6,26 @@ import { CarritoContextProvider} from "../../../context/CarritoContext";
 import { Carrito } from "../../ui/carrito/Carrito";
 import ArticuloInsumoService from "../../../services/ArticuloInsumoService";
 import Categoria from "../../../types/Categoria";
-import CategoriaService from "../../../services/CategoriaService";
 import "./Producto.css";
 import { BaseNavBar } from "../../ui/common/BaseNavBar";
 import IArticuloInsumo from "../../../types/ArticuloInsumoType";
 import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
+import { useParams } from "react-router-dom";
+import CategoriaService from "../../../services/CategoriaService";
 
 const Producto = () => {
   const [productos, setProductos] = useState<ArticuloDto[]>([]);
   const productoService = new ArticuloManufacturadoService();
   const articuloInsumoService = new ArticuloInsumoService();
+  const {sucursalId} = useParams();
   const url = import.meta.env.VITE_API_URL;
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const categoriaService = new CategoriaService();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [articuloInsumo, setArticuloInsumo] = useState<IArticuloInsumo[]>([]);
   const [articuloManufacturado, setArticuloManufacturado] = useState<
     IArticuloManufacturado[]
   >([]);
+  const categoriaService = new CategoriaService();
 
   const estaEnHorarioDeAtencion = (date: Date) => {
     const diaSemana = date.getDay();
@@ -47,7 +49,7 @@ const Producto = () => {
       }
     };
 
-    const horarioLunesADomingo = estaDentroRango(20, 0, 0, 0);
+    const horarioLunesADomingo = estaDentroRango(8, 0, 0, 0);
     const horarioSabadoDomingo = estaDentroRango(11, 0, 15, 0);
 
     const esFinDeSemana = diaSemana === 6 || diaSemana === 0;
@@ -61,39 +63,43 @@ const Producto = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const productData = await productoService.getAll(
-        url + "articuloManufacturado"
-      );
-      const insumData = await articuloInsumoService.getAll(
-        url + "articuloInsumo"
-      );
+      if(sucursalId){
+        const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
 
-      // Filtrar los productos manufacturados y los insumos
-      const insumos = insumData.filter((insumo) => !insumo.esParaElaborar);
-      setArticuloManufacturado(productData);
-      setArticuloInsumo(insumos);
-      // Combinar los productos manufacturados y los insumos en un solo array
+        const productData = await productoService.manufacturados(
+          url, sucursalIdNumber
+        );
+        const insumData = await articuloInsumoService.insumos(
+          url, sucursalIdNumber
+        );
+  
+        // Filtrar los productos manufacturados y los insumos
+        const insumos = insumData.filter((insumo) => !insumo.esParaElaborar);
+        setArticuloManufacturado(productData);
+        setArticuloInsumo(insumos);
+        // Combinar los productos manufacturados y los insumos en un solo array
+  
+        const combinedData = [...productData, ...insumos];
 
-      const combinedData = [...productData, ...insumos];
+        const categories = await categoriaService.categoriaSucursal(url, sucursalIdNumber);
+        setCategorias(categories)
 
-      const categories = combinedData.map((value) => value.categoria);
-      setCategorias(categories);
-
-      const mergedProducts = combinedData.map((value) => ({
-        id: value.id,
-        categoria: value.categoria,
-        denominacion: value.denominacion,
-        precioVenta: value.precioVenta,
-        eliminado: value.eliminado,
-        imagen: value.imagenes[0] || undefined,
-        precioCompra: 0,
-        stockActual: 0,
-        stockMaximo: 0,
-        tiempoEstimadoMinutos: value.tiempoEstimadoMinutos || 0,
-        unidadMedida: value.unidadMedida,
-      }));
-
-      setProductos(mergedProducts);
+        const mergedProducts = combinedData.map((value) => ({
+          id: value.id,
+          categoria: value.categoria,
+          denominacion: value.denominacion,
+          precioVenta: value.precioVenta,
+          eliminado: value.eliminado,
+          imagen: value.imagenes[0] || undefined,
+          precioCompra: 0,
+          stockActual: 0,
+          stockMaximo: 0,
+          tiempoEstimadoMinutos: value.tiempoEstimadoMinutos || 0,
+          unidadMedida: value.unidadMedida,
+        }));
+  
+        setProductos(mergedProducts);
+      }
     };
     fetchData();
   }, []);
@@ -139,7 +145,6 @@ const Producto = () => {
       </>
     );
   }
-
   if (productos.length === 0) {
     return (
       <>
